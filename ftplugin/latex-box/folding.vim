@@ -17,6 +17,9 @@ endif
 if !exists('g:LatexBox_fold_preamble')
     let g:LatexBox_fold_preamble=1
 endif
+if !exists('g:LatexBox_fold_envs')
+    let g:LatexBox_fold_envs=1
+endif
 if !exists('g:LatexBox_fold_parts')
     let g:LatexBox_fold_parts=[
                 \ "appendix",
@@ -33,9 +36,6 @@ if !exists('g:LatexBox_fold_sections')
                 \ "subsection",
                 \ "subsubsection"
                 \ ]
-endif
-if !exists('g:LatexBox_fold_envs')
-    let g:LatexBox_fold_envs=1
 endif
 
 " {{{1 LatexBox_FoldLevel

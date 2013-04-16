@@ -553,7 +553,13 @@ Vim Windows ~
 FOLDING						*latex-box-folding*
 
 LatexBox can fold texts according to LaTeX structure (part, chapter, section
-and subsection).
+and subsection).  Folding is off by default, and can be turned on by defining
+the |g:LatexBox_Folding| variable.
+
+The standard fold settings should suffice for most people.  When folding is
+turned on and a latex document is opened, the document is parsed once in order
+to define the highest fold level based on which parts and sections should be
+folded.
 
 *g:LatexBox_Folding*		Default: undefined
 
@@ -562,14 +568,41 @@ and subsection).
 	'fold-expr' will disable the function. The same goes for |foldexpr|.
 	Set this variable in your .vimrc
 
-*g:LatexBox_fold_envs*       Default: undefined
-
-	Turn on/off folding of environments
-
-*g:LatexBox_fold_preamble*       Default: undefined
+*g:LatexBox_fold_preamble*	Default: 1
 
 	Turn on/off folding of preamble
 
+*g:LatexBox_fold_envs*		Default: 1
+
+	Turn on/off folding of environments
+
+*g:LatexBox_fold_parts*
+
+	Define parts that should be folded.  These are intended as top level
+	parts such as \frontmatter and \appendix, and if they are present in
+	a latex document they will get fold level 1.  The default list of
+	parts is: >
+		let g:LatexBox_fold_parts=[
+			\ "appendix",
+			\ "frontmatter",
+			\ "mainmatter",
+			\ "backmatter"
+			\ ]
+	<
+
+*g:LatexBox_fold_sections*
+
+	Define which section levels should be folded.  The order of the
+	elements defines the order in which they are folded.  The
+	default list of sections is: >
+		let g:LatexBox_fold_sections=[
+			\ "part",
+			\ "chapter",
+			\ "section",
+			\ "subsection",
+			\ "subsubsection"
+			\ ]
+	<
 
 ==============================================================================
 

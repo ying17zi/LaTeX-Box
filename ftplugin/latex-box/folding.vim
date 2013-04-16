@@ -3,9 +3,9 @@
 " Options
 " g:LatexBox_Folding       - Turn on/off folding
 " g:LatexBox_fold_preamble - Turn on/off folding of preamble
-" g:LatexBox_fold_parts    - Define which sections and parts to fold
+" g:LatexBox_fold_parts    - Define parts (eq. appendix, frontmatter) to fold
+" g:LatexBox_fold_sections - Define section levels to fold
 " g:LatexBox_fold_envs     - Turn on/off folding of environments
-" g:LatexBox_not_fold      - Define what to not fold
 "
 
 " {{{1 Set options
@@ -19,6 +19,14 @@ if !exists('g:LatexBox_fold_preamble')
 endif
 if !exists('g:LatexBox_fold_parts')
     let g:LatexBox_fold_parts=[
+                \ "appendix",
+                \ "frontmatter",
+                \ "mainmatter",
+                \ "backmatter"
+                \ ]
+endif
+if !exists('g:LatexBox_fold_sections')
+    let g:LatexBox_fold_sections=[
                 \ "part",
                 \ "chapter",
                 \ "section",
@@ -29,16 +37,42 @@ endif
 if !exists('g:LatexBox_fold_envs')
     let g:LatexBox_fold_envs=1
 endif
-if !exists('g:LatexBox_not_fold')
-    let g:LatexBox_not_fold=[
-                \ "appendix",
-                \ "frontmatter",
-                \ "mainmatter",
-                \ "backmatter"
-                \ ]
-endif
 
 " {{{1 LatexBox_FoldLevel
+
+" FoldLevelStart returns an integer that is used to dynamically set the correct
+" fold level for sections and parts.  This way we don't need to set
+" g:LatexBox_fold_sections differently for different kinds of documents.  E.g.
+" in an article we typically just use section, subsection, etc, so \section
+" should be foldlevel 1, whereas in a book \chapter could be foldlevel 1.
+function! s:FoldLevelStart()
+    "
+    " Search through the document and dynamically define the initial section
+    " level.
+    "
+    let level = 1
+    let part = join(g:LatexBox_fold_parts,'\|')
+    let i = 1
+    while i < line("$")
+        if getline(i) =~ '^\s*\\' . part
+            let level = 2
+            break
+        endif
+        let i += 1
+    endwhile
+    for part in g:LatexBox_fold_sections
+        let i = 1
+        while i < line("$")
+            if getline(i) =~ '^\s*\\' . part
+                return level
+            endif
+            let i += 1
+        endwhile
+        let level -= 1
+    endfor
+endfunction
+let b:LatexBox_CurrentFoldLevelStart = s:FoldLevelStart()
+
 function! LatexBox_FoldLevel(lnum)
     let lnum  = a:lnum
     let line  = getline(lnum)
@@ -60,20 +94,18 @@ function! LatexBox_FoldLevel(lnum)
         return "<1"
     endif
 
-    " Fake sections
-    if line  =~ '^\s*% Fakesection'
+    " Fold parts (\frontmatter, \mainmatter, \backmatter, and \appendix)
+    if line =~# '^\s*\\\%('.join(g:LatexBox_fold_parts, '\|') . '\)'
         return ">1"
     endif
 
-    " Reset foldlevel if \frontmatter \mainmatter \backmatter \appendix
-    if line =~# '^\s*\\\%('.join(g:LatexBox_not_fold, '\|') . '\)'
-        return g:LatexBox_fold_envs
-    endif
-
-    " Fold parts and sections
-    let level = 1
-    for part in g:LatexBox_fold_parts
+    " Fold chapters and sections
+    let level = b:LatexBox_CurrentFoldLevelStart
+    for part in g:LatexBox_fold_sections
         if line  =~ '^\s*\\' . part . '\*\?{'
+            return ">" . level
+        endif
+        if line  =~ '^\s*% Fake' . part
             return ">" . level
         endif
         let level += 1
@@ -168,14 +200,23 @@ function! LatexBox_FoldText()
         let title = "Preamble"
     endif
 
-    " Parts, sections and fake sections
-    if line =~ '\\\(\(sub\)*section\|part\|chapter\)'
+    " Parts, sections and fakesections
+    if line =~ '\\frontmatter'
+        let title = "Frontmatter"
+    elseif line =~ '\\mainmatter'
+        let title = "Mainmatter"
+    elseif line =~ '\\backmatter'
+        let title = "Backmatter"
+    elseif line =~ '\\appendix'
+        let title = "Appendix"
+    elseif line =~ '\\\(\(sub\)*section\|part\|chapter\)'
         let title =  matchstr(line,
                     \ '^\s*\\\(\(sub\)*section\|part\|chapter\)\*\?{\zs.*\ze}')
-    elseif line =~ 'Fakesection:'
-        let title = matchstr(line, 'Fakesection:\s*\zs.*')
-    elseif line =~ 'Fakesection'
-        let title = "Fakesection"
+    elseif line =~ 'Fake\(\(sub\)*section\|part\|chapter\):'
+        let title =  matchstr(line,
+                    \ 'Fake\(\(sub\)*section\|part\|chapter\):\s*\zs.*')
+    elseif line =~ 'Fake\(\(sub\)*section\|part\|chapter\)'
+        let title =  matchstr(line, 'Fake\(\(sub\)*section\|part\|chapter\)')
         return title
     endif
 

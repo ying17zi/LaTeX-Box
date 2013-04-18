@@ -239,10 +239,10 @@ function! LatexBox_FoldText()
             let title = printf('%-12s%s', env . ':',
                         \ substitute(caption, '}\s*$', '',''))
         elseif caption == ''
-            let title = printf('%-12s%57s', env, '(' . label . ')')
+            let title = printf('%-12s%56s', env, '(' . label . ')')
         else
-            let title = printf('%-12s%-35s %-21s', env . ':',
-                        \ strpart(substitute(caption, '}\s*$', '',''),0,35),
+            let title = printf('%-12s%-30s %23s', env . ':',
+                        \ strpart(substitute(caption, '}\s*$', '',''),0,34),
                         \ '(' . label . ')')
         endif
     endif

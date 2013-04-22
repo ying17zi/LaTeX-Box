@@ -54,7 +54,7 @@ function! s:FoldLevelStart()
     let part = join(g:LatexBox_fold_parts,'\|')
     let i = 1
     while i < line("$")
-        if getline(i) =~ '^\s*\\' . part
+        if getline(i) =~ '^\s*\\\(' . part . '\)\>'
             let level = 2
             break
         endif
@@ -63,7 +63,7 @@ function! s:FoldLevelStart()
     for part in g:LatexBox_fold_sections
         let i = 1
         while i < line("$")
-            if getline(i) =~ '^\s*\\' . part
+            if getline(i) =~ '^\s*\\' . part . '\>'
                 return level
             endif
             let i += 1

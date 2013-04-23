@@ -100,10 +100,10 @@ nnoremap <buffer> <silent> <CR> :call <SID>TOCActivate(1)<CR>
 nnoremap <buffer> <silent> <leftrelease> :call <SID>TOCActivate(0)<cr>
 nnoremap <buffer> <silent> <2-leftmouse> :call <SID>TOCActivate(1)<cr>
 nnoremap <buffer> <silent> G G4k
-nnoremap <buffer> <silent> OA k
-nnoremap <buffer> <silent> OB j
-nnoremap <buffer> <silent> OC l
-nnoremap <buffer> <silent> OD h
+nnoremap <buffer> <silent> <Esc>OA k
+nnoremap <buffer> <silent> <Esc>OB j
+nnoremap <buffer> <silent> <Esc>OC l
+nnoremap <buffer> <silent> <Esc>OD h
 " }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

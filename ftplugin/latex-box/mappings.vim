@@ -23,7 +23,7 @@ map <buffer> <LocalLeader>lv :LatexView<CR>
 map <silent> <buffer> <LocalLeader>lt :LatexTOC<CR>
 " }}}
 
-"Jump to match {{{
+" Jump to match {{{
 nmap <buffer> % <Plug>LatexBox_JumpToMatch
 vmap <buffer> % <Plug>LatexBox_JumpToMatch
 omap <buffer> % <Plug>LatexBox_JumpToMatch
@@ -37,5 +37,9 @@ omap <buffer> i$ :normal vi$<CR>
 omap <buffer> a$ :normal va$<CR>
 " }}}
 
+" Jump between sections {{{
+noremap <silent> ]] /\s*\\\(\(sub\)*section\\|chapter\)<cr>
+noremap <silent> [[ ?\s*\\\(\(sub\)*section\\|chapter\)<cr>
+" }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

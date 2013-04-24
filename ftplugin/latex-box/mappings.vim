@@ -43,8 +43,27 @@ omap <buffer> a$ :normal va$<CR>
 " }}}
 
 " Jump between sections {{{
-noremap <silent> ]] /\s*\\\(\(sub\)*section\\|chapter\)<cr>
-noremap <silent> [[ ?\s*\\\(\(sub\)*section\\|chapter\)<cr>
+function! s:LatexBoxNextSection(direction,...)
+	let save_search = @/
+	let sections = [
+		\ '\(sub\)*section',
+		\ 'chapter',
+		\ 'part',
+		\ 'appendix',
+		\ 'frontmatter',
+		\ 'backmatter',
+		\ 'mainmatter',
+		\ ]
+	call search('\s*\\\(' . join(sections,'\|') . '\)\>',a:direction . 'w')
+	if a:0 > 0
+		execute "normal " . a:1
+	endif
+	let @/ = save_search
+endfunction
+nnoremap <buffer> <silent> ]] :call <SID>LatexBoxNextSection('')<CR>
+nnoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','k')<CR>
+nnoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','j')<CR>
+nnoremap <buffer> <silent> [[ :call <SID>LatexBoxNextSection('b')<CR>
 " }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

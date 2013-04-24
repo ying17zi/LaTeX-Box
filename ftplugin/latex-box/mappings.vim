@@ -44,6 +44,16 @@ omap <buffer> a$ :normal va$<CR>
 
 " Jump between sections {{{
 function! s:LatexBoxNextSection(direction,mode,...)
+	if a:mode ==? 'v'
+		normal! gv
+	endif
+	if a:0 > 0
+		if a:1 > 0
+			normal! j
+		else
+			normal! k
+		endif
+	endif
 	let save_search = @/
 	let sections = [
 		\ '\(sub\)*section',
@@ -54,26 +64,27 @@ function! s:LatexBoxNextSection(direction,mode,...)
 		\ 'backmatter',
 		\ 'mainmatter',
 		\ ]
-	if a:mode ==? 'v'
-		normal! gv
-	endif
 	call search('\s*\\\(' . join(sections,'\|') . '\)\>',a:direction . 'W')
-	if a:0 > 0
-		execute "normal " . a:1
-	endif
 	let @/ = save_search
+	if a:0 > 0
+		if a:1 > 0
+			normal! k
+		else
+			normal! j
+		endif
+	endif
 endfunction
 nnoremap <buffer> <silent> ]] :call <SID>LatexBoxNextSection('','')<CR>
-nnoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','','k')<CR>
-nnoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','','j')<CR>
+nnoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','',1)<CR>
+nnoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','',0)<CR>
 nnoremap <buffer> <silent> [[ :call <SID>LatexBoxNextSection('b','')<CR>
 vnoremap <buffer> <silent> ]] :call <SID>LatexBoxNextSection('','v')<CR>
-vnoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','v','k')<CR>
-vnoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','v','j')<CR>
+vnoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','v',1)<CR>
+vnoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','v',0)<CR>
 vnoremap <buffer> <silent> [[ :call <SID>LatexBoxNextSection('b','v')<CR>
 onoremap <buffer> <silent> ]] :call <SID>LatexBoxNextSection('','')<CR>
-onoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','','k')<CR>
-onoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','','j')<CR>
+onoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','',1)<CR>
+onoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','',0)<CR>
 onoremap <buffer> <silent> [[ :call <SID>LatexBoxNextSection('b','')<CR>
 " }}}
 

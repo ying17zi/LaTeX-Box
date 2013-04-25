@@ -43,49 +43,53 @@ omap <buffer> a$ :normal va$<CR>
 " }}}
 
 " Jump between sections {{{
-function! s:LatexBoxNextSection(direction,mode,...)
-	if a:mode ==? 'v'
+function! s:LatexBoxNextSection(type, backwards, visual)
+	" Restore visual mode if desired
+	if a:visual
 		normal! gv
 	endif
-	if a:0 > 0
-		if a:1 > 0
-			normal! j
-		else
+
+	" For the [] and ][ commands we move up or down before the search
+	if a:type == 1
+		if a:backwards
 			normal! k
+		else
+			normal! j
 		endif
 	endif
+
+	" Define search pattern and do the search while preserving "/
 	let save_search = @/
-	let sections = [
-		\ '\(sub\)*section',
-		\ 'chapter',
-		\ 'part',
-		\ 'appendix',
-		\ 'frontmatter',
-		\ 'backmatter',
-		\ 'mainmatter',
-		\ ]
-	call search('\s*\\\(' . join(sections,'\|') . '\)\>',a:direction . 'W')
+	let flags = 'W'
+	if a:backwards
+		let flags = 'b' . flags
+	endif
+	let pattern = '\v\s*\\(' . join([
+				\ '(sub)*section',
+				\ 'chapter',
+				\ 'part',
+				\ 'appendix',
+				\ '(front|back|main)matter'], '|') . ')>'
+	call search(pattern, flags)
 	let @/ = save_search
-	if a:0 > 0
-		if a:1 > 0
-			normal! k
-		else
+
+	" For the [] and ][ commands we move down or up after the search
+	if a:type == 1
+		if a:backwards
 			normal! j
+		else
+			normal! k
 		endif
 	endif
 endfunction
-nnoremap <buffer> <silent> ]] :call <SID>LatexBoxNextSection('','')<CR>
-nnoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','',1)<CR>
-nnoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','',0)<CR>
-nnoremap <buffer> <silent> [[ :call <SID>LatexBoxNextSection('b','')<CR>
-vnoremap <buffer> <silent> ]] :call <SID>LatexBoxNextSection('','v')<CR>
-vnoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','v',1)<CR>
-vnoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','v',0)<CR>
-vnoremap <buffer> <silent> [[ :call <SID>LatexBoxNextSection('b','v')<CR>
-onoremap <buffer> <silent> ]] :call <SID>LatexBoxNextSection('','')<CR>
-onoremap <buffer> <silent> ][ :call <SID>LatexBoxNextSection('','',1)<CR>
-onoremap <buffer> <silent> [] :call <SID>LatexBoxNextSection('b','',0)<CR>
-onoremap <buffer> <silent> [[ :call <SID>LatexBoxNextSection('b','')<CR>
+noremap  <buffer> <silent> ]] :call <SID>LatexBoxNextSection(0,0,0)<CR>
+noremap  <buffer> <silent> ][ :call <SID>LatexBoxNextSection(1,0,0)<CR>
+noremap  <buffer> <silent> [] :call <SID>LatexBoxNextSection(1,1,0)<CR>
+noremap  <buffer> <silent> [[ :call <SID>LatexBoxNextSection(0,1,0)<CR>
+vnoremap <buffer> <silent> ]] :<c-u>call <SID>LatexBoxNextSection(0,0,1)<CR>
+vnoremap <buffer> <silent> ][ :<c-u>call <SID>LatexBoxNextSection(1,0,1)<CR>
+vnoremap <buffer> <silent> [] :<c-u>call <SID>LatexBoxNextSection(1,1,1)<CR>
+vnoremap <buffer> <silent> [[ :<c-u>call <SID>LatexBoxNextSection(0,1,1)<CR>
 " }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

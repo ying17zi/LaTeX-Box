@@ -64,7 +64,8 @@ function! s:LatexBoxNextSection(type, backwards, visual)
 	if a:backwards
 		let flags = 'b' . flags
 	endif
-	let pattern = '\v\s*\\(' . join([
+	let notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
+	let pattern = notcomment . '\v\s*\\(' . join([
 				\ '(sub)*section',
 				\ 'chapter',
 				\ 'part',

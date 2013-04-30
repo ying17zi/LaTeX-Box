@@ -38,6 +38,18 @@ if !exists('g:LatexBox_fold_sections')
                 \ ]
 endif
 
+"
+" The foldexpr function returns "=" for most lines, which means it can become
+" slow for large files.  The following is a hack that is based on this reply to
+" a discussion on the Vim Developer list:
+" http://permalink.gmane.org/gmane.editors.vim.devel/14100
+"
+augroup FastFold
+    autocmd!
+    autocmd InsertEnter *.tex setlocal foldmethod=manual
+    autocmd InsertLeave *.tex setlocal foldmethod=expr
+augroup end
+
 " {{{1 LatexBox_FoldLevel
 
 " FoldLevelStart returns an integer that is used to dynamically set the correct
@@ -74,9 +86,8 @@ endfunction
 let b:LatexBox_CurrentFoldLevelStart = s:FoldLevelStart()
 
 function! LatexBox_FoldLevel(lnum)
-    let lnum  = a:lnum
-    let line  = getline(lnum)
-    let nline = getline(lnum + 1)
+    let line  = getline(a:lnum)
+    let nline = getline(a:lnum + 1)
 
     " Fold preamble
     if g:LatexBox_fold_preamble==1

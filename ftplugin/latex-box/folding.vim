@@ -113,7 +113,7 @@ function! LatexBox_FoldLevel(lnum)
     " Fold chapters and sections
     let level = b:LatexBox_CurrentFoldLevelStart
     for part in g:LatexBox_fold_sections
-        if line  =~ '^\s*\\' . part . '\*\?{'
+        if line  =~ '^\s*\\' . part . '\*\?\s*\({\|\[\)'
             return ">" . level
         endif
         if line  =~ '^\s*% Fake' . part
@@ -212,6 +212,9 @@ function! LatexBox_FoldText()
     endif
 
     " Parts, sections and fakesections
+    let sections = '\(\(sub\)*section\|part\|chapter\)'
+    let secpat1 = '^\s*\\' . sections . '\*\?\s*{'
+    let secpat2 = '^\s*\\' . sections . '\*\?\s*\['
     if line =~ '\\frontmatter'
         let title = "Frontmatter"
     elseif line =~ '\\mainmatter'
@@ -220,15 +223,18 @@ function! LatexBox_FoldText()
         let title = "Backmatter"
     elseif line =~ '\\appendix'
         let title = "Appendix"
-    elseif line =~ '\\\(\(sub\)*section\|part\|chapter\)'
-        let title =  matchstr(line,
-                    \ '^\s*\\\(\(sub\)*section\|part\|chapter\)\*\?{\zs.*\ze}')
-    elseif line =~ 'Fake\(\(sub\)*section\|part\|chapter\):'
-        let title =  matchstr(line,
-                    \ 'Fake\(\(sub\)*section\|part\|chapter\):\s*\zs.*')
-    elseif line =~ 'Fake\(\(sub\)*section\|part\|chapter\)'
-        let title =  matchstr(line, 'Fake\(\(sub\)*section\|part\|chapter\)')
-        return title
+    elseif line =~ secpat1 . '.*}'
+        let title =  matchstr(line, secpat1 . '\zs.*\ze}')
+    elseif line =~ secpat1
+        let title =  matchstr(line, secpat1 . '\zs.*')
+    elseif line =~ secpat2 . '.*\]'
+        let title =  matchstr(line, secpat2 . '\zs.*\ze\]')
+    elseif line =~ secpat2
+        let title =  matchstr(line, secpat2 . '\zs.*')
+    elseif line =~ 'Fake' . sections . ':'
+        let title =  matchstr(line,'Fake' . sections . ':\s*\zs.*')
+    elseif line =~ 'Fake' . sections
+        let title =  matchstr(line, 'Fake' . sections)
     endif
 
     " Environments

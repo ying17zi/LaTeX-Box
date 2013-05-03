@@ -60,18 +60,28 @@ augroup end
 function! s:FoldLevelStart()
     "
     " Search through the document and dynamically define the initial section
-    " level.
+    " level.  If we use more than one of the *matter commands, than we need one
+    " more foldlevel.
     "
     let level = 1
-    let part = join(g:LatexBox_fold_parts,'\|')
-    let i = 1
-    while i < line("$")
-        if getline(i) =~ '^\s*\\\(' . part . '\)\>'
+    let nparts = 0
+    for part in g:LatexBox_fold_parts
+        let i = 1
+        while i < line("$")
+            if getline(i) =~ '^\s*\\' . part . '\>'
+                let nparts += 1
+                break
+            endif
+            let i += 1
+        endwhile
+        if nparts > 1
             let level = 2
             break
         endif
-        let i += 1
-    endwhile
+    endfor
+    "
+    " Set the level according to the highest level of sectioning
+    "
     for part in g:LatexBox_fold_sections
         let i = 1
         while i < line("$")
@@ -82,6 +92,7 @@ function! s:FoldLevelStart()
         endwhile
         let level -= 1
     endfor
+    return level
 endfunction
 let b:LatexBox_CurrentFoldLevelStart = s:FoldLevelStart()
 

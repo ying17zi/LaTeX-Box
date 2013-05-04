@@ -9,7 +9,7 @@
 "
 
 " {{{1 Set options
-if exists('g:LatexBox_Folding')
+if exists('g:LatexBox_Folding') && g:LatexBox_Folding == 1
     setl foldmethod=expr
     setl foldexpr=LatexBox_FoldLevel(v:lnum)
     setl foldtext=LatexBox_FoldText()

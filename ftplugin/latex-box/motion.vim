@@ -161,7 +161,6 @@ endfunction
 
 " Allow to disable functionality if desired
 if !exists('g:LatexBox_loaded_matchparen')
-
 	" Disable matchparen autocommands
 	augroup LatexBox_HighlightPairs
 		autocmd BufEnter * if !exists("g:loaded_matchparen") || !g:loaded_matchparen | runtime plugin/matchparen.vim | endif
@@ -169,13 +168,13 @@ if !exists('g:LatexBox_loaded_matchparen')
 		autocmd! CursorMoved *.tex call s:FindMatchingPair('h')
 		autocmd! CursorMovedI *.tex call s:FindMatchingPair('i')
 	augroup END
-
-	" Use LatexBox'es FindMatchingPair as '%' (enable jump between e.g. $'s)
-	nnoremap <silent> <Plug>LatexBox_JumpToMatch	:call <SID>FindMatchingPair('n')<CR>
-	vnoremap <silent> <Plug>LatexBox_JumpToMatch	:call <SID>FindMatchingPair('v')<CR>
-	onoremap <silent> <Plug>LatexBox_JumpToMatch	v:call <SID>FindMatchingPair('o')<CR>
-
 endif
+
+" Use LatexBox'es FindMatchingPair as '%' (enable jump between e.g. $'s)
+nnoremap <silent> <Plug>LatexBox_JumpToMatch	:call <SID>FindMatchingPair('n')<CR>
+vnoremap <silent> <Plug>LatexBox_JumpToMatch	:call <SID>FindMatchingPair('v')<CR>
+onoremap <silent> <Plug>LatexBox_JumpToMatch	v:call <SID>FindMatchingPair('o')<CR>
+
 " }}}
 
 " select inline math {{{

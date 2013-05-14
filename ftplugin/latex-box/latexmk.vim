@@ -279,7 +279,7 @@ command! -bang	Latexmk				call LatexBox_Latexmk(<q-bang> == "!")
 command! -bang	LatexmkClean		call LatexBox_LatexmkClean(<q-bang> == "!")
 command! -bang	LatexmkStatus		call LatexBox_LatexmkStatus(<q-bang> == "!")
 command! LatexmkStop			call LatexBox_LatexmkStop()
-command! LatexErrors			call LatexBox_LatexErrors(1)
+command! LatexErrors			call LatexBox_LatexErrors(0)
 " }}}
 
 autocmd VimLeavePre * call <SID>kill_all_latexmk()

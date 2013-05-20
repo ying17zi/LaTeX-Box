@@ -284,7 +284,7 @@ function! LatexBox_FoldText()
         elseif caption == ''
             let title = printf('%-12s%56s', env, '(' . label . ')')
         else
-            let title = printf('%-12s%-30s %23s', env . ':',
+            let title = printf('%-12s%-30s %21s', env . ':',
                         \ strpart(substitute(caption, '}\s*$', '',''),0,34),
                         \ '(' . label . ')')
         endif

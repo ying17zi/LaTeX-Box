@@ -181,9 +181,11 @@ endfunction
 
 " kill_all_latexmk {{{
 function! s:kill_all_latexmk()
-	for gpid in values(b:latexmk_running_pids)
-		call s:kill_latexmk(gpid)
-	endfor
+	if exists('b:latexmk_running_pids')
+		for gpid in values(b:latexmk_running_pids)
+			call s:kill_latexmk(gpid)
+		endfor
+	endif
 	let b:latexmk_running_pids = {}
 endfunction
 " }}}
@@ -282,6 +284,6 @@ command! LatexmkStop			call LatexBox_LatexmkStop()
 command! LatexErrors			call LatexBox_LatexErrors(0)
 " }}}
 
-autocmd VimLeavePre * call <SID>kill_all_latexmk()
+autocmd BufUnload <buffer> call <SID>kill_all_latexmk()
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

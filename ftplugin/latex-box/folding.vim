@@ -201,7 +201,7 @@ function! s:CaptionFrame(line)
     " Test simple variant first
     let caption = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
 
-    if ! caption == ''
+    if len(caption) > 0
         return caption
     else
         let i = v:foldstart

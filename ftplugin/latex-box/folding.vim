@@ -198,11 +198,14 @@ function! s:CaptionTable()
 endfunction
 
 function! s:CaptionFrame(line)
-    " Test simple variant first
-    let caption = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
+    " Test simple variants first
+    let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
+    let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
 
-    if len(caption) > 0
-        return caption
+    if len(caption1) > 0
+        return caption1
+    elseif len(caption2) > 0
+        return caption2
     else
         let i = v:foldstart
         while i <= v:foldend
@@ -265,7 +268,10 @@ function! LatexBox_FoldText()
 
     " Environments
     if line =~ '\\begin'
+        " Capture environment name
         let env = matchstr(line,'\\begin\*\?{\zs\w*\*\?\ze}')
+
+        " Set caption based on type of environment
         if env == 'frame'
             let label = ''
             let caption = s:CaptionFrame(line)
@@ -276,6 +282,14 @@ function! LatexBox_FoldText()
             let label = s:LabelEnv()
             let caption = s:CaptionEnv()
         endif
+
+        " If no caption found, check for a caption comment
+        if caption == ''
+            echom "Testing"
+            let caption = matchstr(line,'\\begin\*\?{.*}\s*%\s*\zs.*')
+        endif
+
+        " Create title based on caption and label
         if caption . label == ''
             let title = env
         elseif label == ''

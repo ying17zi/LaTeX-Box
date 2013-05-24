@@ -285,7 +285,6 @@ function! LatexBox_FoldText()
 
         " If no caption found, check for a caption comment
         if caption == ''
-            echom "Testing"
             let caption = matchstr(line,'\\begin\*\?{.*}\s*%\s*\zs.*')
         endif
 

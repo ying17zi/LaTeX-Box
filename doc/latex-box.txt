@@ -611,11 +611,26 @@ FREQUENTLY ASKED QUESTIONS			*latex-box-FAQ*
 Q: How can I use SyncTeX with the Skim viewer?
 
 A: Add the following line in your ~/.latexmkrc file: >
+
 	$pdflatex = 'pdflatex -synctex=1 %O %S'
+
 <  and create a "latex-search" mapping (<Leader>ls) in your ~/.vimrc: >
-	map <silent> <Leader>ls :silent !/Applications/Skim.app/Contents/SharedSupport/displayline
-		\ <C-R>=line('.')<CR> "<C-R>=LatexBox_GetOutputFile()<CR>" "%:p" <CR>
+
+	map <silent> <Leader>ls :silent
+		\ !/Applications/Skim.app/Contents/SharedSupport/displayline
+		\ <C-R>=line('.')<CR> "<C-R>=LatexBox_GetOutputFile()<CR>"
+		\ "%:p" <CR>
+
 <  (inspired from vim-latex).
+
+   Alternatively, the option for latexmk may be given through the variable
+   |g:LatexBox_latexmk_options|, for instance as: >
+
+	let g:LatexBox_latexmk_options
+			\ = "-pdflatex='pdflatex -synctex=1 \\%O \\%S'"
+
+<  which can be added to your .vimrc file as desired.  Note in particular that
+   the %'s must be escaped twice.
 
 
 Q: How can I use xelatex instead of pdflatex for some documents only?
@@ -623,6 +638,7 @@ Q: How can I use xelatex instead of pdflatex for some documents only?
 A: Instead of putting the settings in your ~/.latexmkrc file, put them in your
    document's working directory, in a file named either latexmkrc or .latexmkrc: >
 	$pdflatex = 'xelatex %O %S'
+
 
 Q: How can I specify the main TeX file for a multi-file document
 

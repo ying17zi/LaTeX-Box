@@ -119,8 +119,9 @@ function! LatexBox_Latexmk(force)
 	endif
 
 	" latexmk command
+	let mainfile = fnamemodify(LatexBox_GetMainTexFile(), ':t')
 	let cmd = 'cd ' . shellescape(LatexBox_GetTexRoot()) . ' ; ' . l:env .
-				\ ' latexmk ' . l:options	. ' ' . shellescape(LatexBox_GetMainTexFile())
+				\ ' latexmk ' . l:options	. ' ' . mainfile
 
 	" callback after latexmk is finished
 	let vimcmd = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' .

@@ -35,22 +35,21 @@ function! LatexBox_Latexmk(force)
 	" Set latexmk command with options
 	let texroot = LatexBox_GetTexRoot()
 	let mainfile = fnamemodify(LatexBox_GetMainTexFile(), ':t')
-	let cmd = 'cd ' . shellescape(texroot) . ' ;'
-	let cmd .= 'latexmk -' . g:LatexBox_output_type . ' '
+	let l:cmd = 'cd ' . shellescape(texroot) . ' ;'
+	let l:cmd .= 'latexmk -' . g:LatexBox_output_type . ' '
 	if a:force
-		let cmd .= ' -g'
+		let l:cmd .= ' -g'
 	endif
-	let cmd .= g:LatexBox_latexmk_options
-	let cmd .= ' -silent'
-	let cmd .= " -e '$pdflatex =~ s/ / -file-line-error /'"
-	let cmd .= " -e '$latex =~ s/ / -file-line-error /'"
-	let cmd .= ' ' . shellescape(mainfile)
-	let cmd .= '>/dev/null'
+	let l:cmd .= g:LatexBox_latexmk_options
+	let l:cmd .= ' -silent'
+	let l:cmd .= " -e '$pdflatex =~ s/ / -file-line-error /'"
+	let l:cmd .= " -e '$latex =~ s/ / -file-line-error /'"
+	let l:cmd .= ' ' . shellescape(mainfile)
+	let l:cmd .= '>/dev/null'
 
 	" Execute command
-	" silent execute '!' . cmd
 	echo 'Compiling to pdf...'
-	call system(cmd)
+	let l:cmd_output = system(l:cmd)
 	if !has('gui_running')
 		redraw!
 	endif
@@ -59,9 +58,11 @@ function! LatexBox_Latexmk(force)
 	call LatexBox_LatexErrors(v:shell_error)
 
 	if v:shell_error > 0
-		echomsg "Error (latexmk exited with status " . v:shell_error . ")"
-	else
+		echomsg "Error (latexmk exited with status " . v:shell_error . ")."
+	elseif match(l:cmd_output, 'Rule') > -1
 		echomsg "Success!"
+	else
+		echomsg "No file change detected. Skipping."
 	endif
 
 endfunction
@@ -92,7 +93,6 @@ function! LatexBox_LatexmkClean(cleanall)
 	echomsg "latexmk clean finished"
 endfunction
 " }}}
-
 
 " LatexErrors {{{
 " LatexBox_LatexErrors(jump, [basename])

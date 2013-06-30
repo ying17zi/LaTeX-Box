@@ -1,49 +1,6 @@
 " LaTeX Box latexmk functions
 
-
-" <SID> Wrap {{{
-function! s:GetSID()
-	return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
-endfunction
-let s:SID = s:GetSID()
-function! s:SIDWrap(func)
-	return s:SID . a:func
-endfunction
-" }}}
-
-" Compilation {{{
-
-" g:vim_program {{{
-if !exists('g:vim_program')
-
-	if match(&shell, '/\(bash\|zsh\)$') >= 0
-		let ppid = '$PPID'
-	else
-		let ppid = '$$'
-	endif
-
-	" attempt autodetection of vim executable
-	let g:vim_program = ''
-	let tmpfile = tempname()
-	silent execute '!ps -o command= -p ' . ppid . ' > ' . tmpfile
-	for line in readfile(tmpfile)
-		let line = matchstr(line, '^\S\+\>')
-		if !empty(line) && executable(line)
-			let g:vim_program = line . ' -g'
-			break
-		endif
-	endfor
-	call delete(tmpfile)
-
-	if empty(g:vim_program)
-		if has('gui_macvim')
-			let g:vim_program = '/Applications/MacVim.app/Contents/MacOS/Vim -g'
-		else
-			let g:vim_program = v:progname
-		endif
-	endif
-endif
-" }}}
+" Options and variables {{{
 
 if !exists('g:LatexBox_latexmk_options')
 	let g:LatexBox_latexmk_options = ''
@@ -57,187 +14,79 @@ endif
 if !exists('g:LatexBox_autojump')
 	let g:LatexBox_autojump = 0
 endif
-if ! exists("g:LatexBox_quickfix")
+if ! exists('g:LatexBox_quickfix')
 	let g:LatexBox_quickfix = 1
 endif
-" }}}
+if !exists('g:LatexBox_autosave')
+	let g:LatexBox_autosave = 0
+endif
 
-
-" dictionary of latexmk PID's (basename: pid)
-let b:latexmk_running_pids = {}
-
-" Set PID {{{
-function! s:LatexmkSetPID(basename, pid)
-	let b:latexmk_running_pids[a:basename] = a:pid
-endfunction
-" }}}
-
-" Callback {{{
-function! s:LatexmkCallback(basename, status)
-	call remove(b:latexmk_running_pids, a:basename)
-	call LatexBox_LatexErrors(a:status, a:basename)
-endfunction
 " }}}
 
 " Latexmk {{{
 function! LatexBox_Latexmk(force)
 
-	if empty(v:servername)
-		echoerr "cannot run latexmk in background without a VIM server"
-		return
+	if g:LatexBox_autosave
+		w
 	endif
 
 	let basename = LatexBox_GetTexBasename(1)
 
-	if has_key(b:latexmk_running_pids, basename)
-		echomsg "latexmk is already running for `" . fnamemodify(basename, ':t') . "'"
-		return
-	endif
-
-	let callsetpid = s:SIDWrap('LatexmkSetPID')
-	let callback = s:SIDWrap('LatexmkCallback')
-
-	let l:options = '-' . g:LatexBox_output_type . ' -quiet ' . g:LatexBox_latexmk_options
-	if a:force
-		let l:options .= ' -g'
-	endif
-	let l:options .= " -e '$pdflatex =~ s/ / -file-line-error /'"
-	let l:options .= " -e '$latex =~ s/ / -file-line-error /'"
-
-	" callback to set the pid
-	let vimsetpid = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' .
-				\ shellescape(callsetpid) . '\(\"' . fnameescape(basename) . '\",$$\)'
-
-	" wrap width in log file
-	let max_print_line = 2000
-
-	" set environment
-	if match(&shell, '/tcsh$') >= 0
-		let l:env = 'setenv max_print_line ' . max_print_line . '; '
-	else
-		let l:env = 'max_print_line=' . max_print_line
-	endif
-
-	" latexmk command
+	" Set latexmk command with options
+	let texroot = LatexBox_GetTexRoot()
 	let mainfile = fnamemodify(LatexBox_GetMainTexFile(), ':t')
-	let cmd = 'cd ' . shellescape(LatexBox_GetTexRoot()) . ' ; ' . l:env .
-				\ ' latexmk ' . l:options	. ' ' . mainfile
+	let cmd = 'cd ' . shellescape(texroot) . ' ;'
+	let cmd .= 'latexmk -' . g:LatexBox_output_type . ' '
+	if a:force
+		let cmd .= ' -g'
+	endif
+	let cmd .= g:LatexBox_latexmk_options
+	let cmd .= ' -silent'
+	let cmd .= " -e '$pdflatex =~ s/ / -file-line-error /'"
+	let cmd .= " -e '$latex =~ s/ / -file-line-error /'"
+	let cmd .= ' ' . shellescape(mainfile)
+	let cmd .= '>/dev/null'
 
-	" callback after latexmk is finished
-	let vimcmd = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' .
-				\ shellescape(callback) . '\(\"' . fnameescape(basename) . '\",$?\)'
-
-	silent execute '! ( ' . vimsetpid . ' ; ( ' . cmd . ' ) ; ' . vimcmd . ' ) >&/dev/null &'
-	if !has("gui_running")
+	" Execute command
+	" silent execute '!' . cmd
+	echo 'Compiling to pdf...'
+	call system(cmd)
+	if !has('gui_running')
 		redraw!
 	endif
-endfunction
-" }}}
 
-" LatexmkStop {{{
-function! LatexBox_LatexmkStop()
+	" check for errors
+	call LatexBox_LatexErrors(v:shell_error)
 
-	let basename = LatexBox_GetTexBasename(1)
-
-	if !has_key(b:latexmk_running_pids, basename)
-		echomsg "latexmk is not running for `" . fnamemodify(basename, ':t') . "'"
-		return
-	endif
-
-	call s:kill_latexmk(b:latexmk_running_pids[basename])
-
-	call remove(b:latexmk_running_pids, basename)
-	echomsg "latexmk stopped for `" . fnamemodify(basename, ':t') . "'"
-endfunction
-" }}}
-
-" kill_latexmk {{{
-function! s:kill_latexmk(gpid)
-
-	" This version doesn't work on systems on which pkill is not installed:
-	"!silent execute '! pkill -g ' . pid
-
-	" This version is more portable, but still doesn't work on Mac OS X:
-	"!silent execute '! kill `ps -o pid= -g ' . pid . '`'
-
-	" Since 'ps' behaves differently on different platforms, we must use brute force:
-	" - list all processes in a temporary file
-	" - match by process group ID
-	" - kill matches
-	let pids = []
-	let tmpfile = tempname()
-	silent execute '!ps x -o pgid,pid > ' . tmpfile
-	for line in readfile(tmpfile)
-		let pid = matchstr(line, '^\s*' . a:gpid . '\s\+\zs\d\+\ze')
-		if !empty(pid)
-			call add(pids, pid)
-		endif
-	endfor
-	call delete(tmpfile)
-	if !empty(pids)
-		silent execute '! kill ' . join(pids)
-	endif
-endfunction
-" }}}
-
-" kill_all_latexmk {{{
-function! s:kill_all_latexmk()
-	if exists('b:latexmk_running_pids')
-		for gpid in values(b:latexmk_running_pids)
-			call s:kill_latexmk(gpid)
-		endfor
-	endif
-	let b:latexmk_running_pids = {}
 endfunction
 " }}}
 
 " LatexmkClean {{{
 function! LatexBox_LatexmkClean(cleanall)
-
-	if a:cleanall
-		let l:options = '-C'
-	else
-		let l:options = '-c'
+	let basename = LatexBox_GetTexBasename(1)
+	if has_key(g:latexmk_running_pids, basename)
+		echomsg "don't clean when latexmk is running"
+		return
 	endif
 
-	silent execute '! cd ' . shellescape(LatexBox_GetTexRoot()) . ' ; latexmk ' . l:options
-				\	. ' ' . shellescape(LatexBox_GetMainTexFile()) . ' >&/dev/null'
-	if !has("gui_running")
+	let cmd = '! cd ' . shellescape(LatexBox_GetTexRoot()) . ';'
+	if a:cleanall
+		let cmd .= 'latexmk -C '
+	else
+		let cmd .= 'latexmk -c '
+	endif
+	let cmd .= shellescape(LatexBox_GetMainTexFile())
+	let cmd .= '>&/dev/null'
+
+	silent execute cmd
+	if !has('gui_running')
 		redraw!
 	endif
 
 	echomsg "latexmk clean finished"
-
 endfunction
 " }}}
 
-" LatexmkStatus {{{
-function! LatexBox_LatexmkStatus(detailed)
-
-	if a:detailed
-		if empty(b:latexmk_running_pids)
-			echo "latexmk is not running"
-		else
-			let plist = ""
-			for [basename, pid] in items(b:latexmk_running_pids)
-				if !empty(plist)
-					let plist .= '; '
-				endif
-				let plist .= fnamemodify(basename, ':t') . ':' . pid
-			endfor
-			echo "latexmk is running (" . plist . ")"
-		endif
-	else
-		let basename = LatexBox_GetTexBasename(1)
-		if has_key(b:latexmk_running_pids, basename)
-			echo "latexmk is running"
-		else
-			echo "latexmk is not running"
-		endif
-	endif
-
-endfunction
-" }}}
 
 " LatexErrors {{{
 " LatexBox_LatexErrors(jump, [basename])
@@ -250,10 +99,11 @@ function! LatexBox_LatexErrors(status, ...)
 
 	if fnamemodify(getcwd(), ":p") !=# fnamemodify(LatexBox_GetTexRoot(), ":p")
 		redraw
-		echohl WarningMsg
-		echomsg 'Changing directory to TeX root: ' . LatexBox_GetTexRoot() . ' to support error log parsing'
-		echohl None
-		execute 'cd ' . LatexBox_GetTexRoot()
+		" echohl WarningMsg
+		" echomsg 'Changing directory to TeX root: '
+		" 			\ . LatexBox_GetTexRoot() . ' to support error log parsing'
+		" echohl None
+		execute 'lcd ' . LatexBox_GetTexRoot()
 	endif
 
 	if g:LatexBox_autojump
@@ -271,23 +121,18 @@ function! LatexBox_LatexErrors(status, ...)
 		endif
 	endif
 
-	if a:status
-		echomsg "latexmk exited with status " . a:status
-	else
-		echomsg "latexmk finished"
+	if a:status > 0
+		echomsg "Error (latexmk exited with status " . a:status . ")"
+	elseif a:status == 0
+		echomsg "Success!"
 	endif
-
 endfunction
 " }}}
 
 " Commands {{{
-command! -bang	Latexmk				call LatexBox_Latexmk(<q-bang> == "!")
-command! -bang	LatexmkClean		call LatexBox_LatexmkClean(<q-bang> == "!")
-command! -bang	LatexmkStatus		call LatexBox_LatexmkStatus(<q-bang> == "!")
-command! LatexmkStop			call LatexBox_LatexmkStop()
-command! LatexErrors			call LatexBox_LatexErrors(0)
+command! -bang	Latexmk			call LatexBox_Latexmk(<q-bang> == "!")
+command! -bang	LatexmkClean	call LatexBox_LatexmkClean(<q-bang> == "!")
+command! LatexErrors			call LatexBox_LatexErrors(-1)
 " }}}
-
-autocmd BufUnload <buffer> call <SID>kill_all_latexmk()
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

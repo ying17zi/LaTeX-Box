@@ -58,6 +58,12 @@ function! LatexBox_Latexmk(force)
 	" check for errors
 	call LatexBox_LatexErrors(v:shell_error)
 
+	if v:shell_error > 0
+		echomsg "Error (latexmk exited with status " . v:shell_error . ")"
+	else
+		echomsg "Success!"
+	endif
+
 endfunction
 " }}}
 
@@ -97,35 +103,33 @@ function! LatexBox_LatexErrors(status, ...)
 		let log = LatexBox_GetLogFile()
 	endif
 
-	if fnamemodify(getcwd(), ":p") !=# fnamemodify(LatexBox_GetTexRoot(), ":p")
-		redraw
-		" echohl WarningMsg
-		" echomsg 'Changing directory to TeX root: '
-		" 			\ . LatexBox_GetTexRoot() . ' to support error log parsing'
-		" echohl None
-		execute 'lcd ' . LatexBox_GetTexRoot()
-	endif
+	" set cwd to expand error file correctly
+	let l:cwd = fnamemodify(getcwd(), ':p')
+	execute 'lcd ' . LatexBox_GetTexRoot()
+	try
+		if g:LatexBox_autojump
+			execute 'cfile ' . fnameescape(log)
+		else
+			execute 'cgetfile ' . fnameescape(log)
+		endif
+	finally
+		" restore cwd
+		execute 'lcd ' . l:cwd
+	endtry
 
-	if g:LatexBox_autojump
-		execute 'cfile ' . fnameescape(log)
-	else
-		execute 'cgetfile ' . fnameescape(log)
-	endif
-
-	" always open quickfix when an error/warning is detected
-	if g:LatexBox_quickfix
-		ccl
-		cw
+	" always open window if started by LatexErrors command
+	if a:status < 0
+		cclose
+		botright copen
+	" otherwise only when an error/warning is detected
+	elseif g:LatexBox_quickfix
+		cclose
+		botright cw
 		if g:LatexBox_quickfix==2
 			wincmd p
 		endif
 	endif
 
-	if a:status > 0
-		echomsg "Error (latexmk exited with status " . a:status . ")"
-	elseif a:status == 0
-		echomsg "Success!"
-	endif
 endfunction
 " }}}
 

@@ -1,12 +1,6 @@
 # LaTeX-BoX
 ![LaTeX-BoX](https://raw.github.com/LaTeX-Box-Team/LaTeX-Box/master/doc/LaTeX-BoX.png)
 
-## Edits from main fork:
-
-Similar to the remove-vimserver and portable_lmk branches but with better
-directory handling. Running LatexErrors won't change your working directory
-anymore (neither cd nor lcd). Also added an option to save file on compilation.
-
 ## This plugin provides:
 - Background compilation using latexmk.
 - Completion for commands, environments, labels, bibtex entries, and inline maths.

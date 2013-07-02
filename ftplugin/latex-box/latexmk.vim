@@ -252,6 +252,8 @@ function! LatexBox_LatexErrors(status, ...)
 endfunction
 " }}}
 
+"  Async functions {{{
+
 " LatexmkStatus {{{
 function! LatexBox_LatexmkStatus(detailed)
 
@@ -337,7 +339,10 @@ function! s:kill_all_latexmk()
 endfunction
 " }}}
 
+" }}}
+
 " Commands {{{
+
 command! -bang	Latexmk			call LatexBox_Latexmk(<q-bang> == "!", g:LatexBox_async)
 command! -bang	LatexmkSync		call LatexBox_Latexmk(<q-bang> == "!", 0)
 command! -bang	LatexmkClean	call LatexBox_LatexmkClean(<q-bang> == "!")

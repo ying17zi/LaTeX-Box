@@ -229,8 +229,8 @@ function! LatexBox_Latexmk(force, background_mode)
 
 		if g:LatexBox_background_mode == 0
 			" check for errors
+			call LatexBox_LatexErrors(v:shell_error)
 			if v:shell_error > 0
-				call LatexBox_LatexErrors(v:shell_error)
 				echomsg "Error (latexmk exited with status " . v:shell_error . ")."
 			elseif match(l:cmd_output, 'Rule') > -1
 				echomsg "Success!"

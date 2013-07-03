@@ -13,10 +13,6 @@ map <buffer> <LocalLeader>lg :LatexmkStatus<CR>
 map <buffer> <LocalLeader>lG :LatexmkStatus!<CR>
 map <buffer> <LocalLeader>lk :LatexmkStop<CR>
 map <buffer> <LocalLeader>le :LatexErrors<CR>
-map <buffer> <LocalLeader>la :LatexmkAsync<CR>
-map <buffer> <LocalLeader>lA :LatexmkAsync!<CR>
-map <buffer> <LocalLeader>ls :LatexmkSync<CR>
-map <buffer> <LocalLeader>lS :LatexmkSync!<CR>
 " }}}
 
 " View {{{

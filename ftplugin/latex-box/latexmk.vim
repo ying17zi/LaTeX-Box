@@ -5,8 +5,11 @@
 if !exists('g:LatexBox_latexmk_options')
 	let g:LatexBox_latexmk_options = ''
 endif
-if !exists('g:LatexBox_background_mode')
-	let g:LatexBox_background_mode = 0 " 0 for no background, 1 for continous mode, 2 for vim-server
+if !exists('g:LatexBox_latexmk_async')
+	let g:LatexBox_latexmk_async = 0
+endif
+if !exists('g:LatexBox_latexmk_preview_continuously')
+	let g:LatexBox_latexmk_preview_continuously = 0
 endif
 if !exists('g:LatexBox_output_type')
 	let g:LatexBox_output_type = 'pdf'
@@ -19,9 +22,6 @@ if !exists('g:LatexBox_autojump')
 endif
 if ! exists('g:LatexBox_quickfix')
 	let g:LatexBox_quickfix = 1
-endif
-if !exists('g:LatexBox_autosave')
-	let g:LatexBox_autosave = 0
 endif
 
 " }}}
@@ -41,7 +41,7 @@ endfunction
 
 " kill_latexmk_process {{{
 function! s:kill_latexmk_process(pid)
-	if g:LatexBox_background_mode == 2
+	if g:LatexBox_latexmk_async
 		" vim-server mode
 		let pids = []
 		let tmpfile = tempname()
@@ -78,7 +78,7 @@ endfunction
 
 " Setup for vim-server {{{
 
-if g:LatexBox_background_mode == 2
+if g:LatexBox_latexmk_async
 
 	function! s:GetSID()
 		return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
@@ -89,8 +89,11 @@ if g:LatexBox_background_mode == 2
 	endfunction
 
 	function! s:LatexmkCallback(basename, status)
-		call remove(g:latexmk_running_pids, a:basename)
-		call LatexBox_LatexErrors(a:status, a:basename)
+		" only remove the pid if not in continuous mode
+		if !g:LatexBox_latexmk_preview_continuously
+			call remove(g:latexmk_running_pids, a:basename)
+			call LatexBox_LatexErrors(a:status, a:basename)
+		endif
 	endfunction
 
 	let s:SID = s:GetSID()
@@ -130,21 +133,17 @@ endif
 " }}}
 
 " Latexmk {{{
-function! LatexBox_Latexmk(force, background_mode)
+function! LatexBox_Latexmk(force)
 
-	if a:background_mode == 2 && empty(v:servername)
+	if g:LatexBox_latexmk_async && empty(v:servername)
 		echoerr "cannot run latexmk in background without a VIM server"
-		echoerr "set g:LatexBox_background_mode to 0 or 1 to change compiling mode"
+		echoerr "set g:LatexBox_latexmk_async to 0 to change compiling mode"
 		return
-	endif
-
-	if g:LatexBox_autosave
-		w
 	endif
 
 	let basename = LatexBox_GetTexBasename(1)
 
-	if a:background_mode == 2
+	if g:LatexBox_latexmk_async
 		" compile in the background using vim-server
 
 		if has_key(g:latexmk_running_pids, basename)
@@ -158,6 +157,9 @@ function! LatexBox_Latexmk(force, background_mode)
 		let l:options = '-' . g:LatexBox_output_type . ' -quiet ' . g:LatexBox_latexmk_options
 		if a:force
 			let l:options .= ' -g'
+		endif
+		if g:LatexBox_latexmk_preview_continuously
+			let l:cmd .= ' -pvc'
 		endif
 		let l:options .= " -e '$pdflatex =~ s/ / -file-line-error /'"
 		let l:options .= " -e '$latex =~ s/ / -file-line-error /'"
@@ -193,7 +195,7 @@ function! LatexBox_Latexmk(force, background_mode)
 	else
 		" compile directly
 
-		if a:background_mode == 1 && has_key(g:latexmk_running_pids, basename)
+		if g:LatexBox_latexmk_preview_continuously && has_key(g:latexmk_running_pids, basename)
 			echomsg "latexmk is already running for `" . fnamemodify(basename, ':t') . "'"
 			return
 		endif
@@ -205,7 +207,7 @@ function! LatexBox_Latexmk(force, background_mode)
 		if a:force
 			let l:cmd .= ' -g'
 		endif
-		if g:LatexBox_background_mode == 1
+		if g:LatexBox_latexmk_preview_continuously
 			let l:cmd .= ' -pvc'
 		endif
 		let l:cmd .= g:LatexBox_latexmk_options
@@ -214,7 +216,7 @@ function! LatexBox_Latexmk(force, background_mode)
 		let l:cmd .= " -e '$latex =~ s/ / -file-line-error /'"
 		let l:cmd .= ' ' . shellescape(mainfile)
 
-		if g:LatexBox_background_mode == 1
+		if g:LatexBox_latexmk_preview_continuously
 			let l:cmd .= '>/dev/null &'
 		else
 			let l:cmd .= '>/dev/null'
@@ -227,7 +229,7 @@ function! LatexBox_Latexmk(force, background_mode)
 			redraw!
 		endif
 
-		if g:LatexBox_background_mode == 0
+		if !g:LatexBox_latexmk_preview_continuously
 			" check for errors
 			call LatexBox_LatexErrors(v:shell_error)
 			if v:shell_error > 0
@@ -359,11 +361,11 @@ endfunction
 
 " Commands {{{
 
-command! -bang	Latexmk			call LatexBox_Latexmk(<q-bang> == "!", g:LatexBox_background_mode)
+command! -bang	Latexmk			call LatexBox_Latexmk(<q-bang> == "!")
 command! -bang	LatexmkClean	call LatexBox_LatexmkClean(<q-bang> == "!")
 command! LatexErrors			call LatexBox_LatexErrors(-1)
 
-if g:LatexBox_background_mode
+if g:LatexBox_latexmk_async || g:LatexBox_latexmk_preview_continuously
 	autocmd BufUnload <buffer> 	call LatexBox_LatexmkStop(1)
 	autocmd VimLeave * 			call <SID>kill_all_latexmk_processes()
 

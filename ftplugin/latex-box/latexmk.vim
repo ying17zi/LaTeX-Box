@@ -159,7 +159,7 @@ function! LatexBox_Latexmk(force)
 			let l:options .= ' -g'
 		endif
 		if g:LatexBox_latexmk_preview_continuously
-			let l:cmd .= ' -pvc'
+			let l:options .= ' -pvc'
 		endif
 		let l:options .= " -e '$pdflatex =~ s/ / -file-line-error /'"
 		let l:options .= " -e '$latex =~ s/ / -file-line-error /'"
@@ -223,7 +223,7 @@ function! LatexBox_Latexmk(force)
 		endif
 
 		" Execute command
-		echo 'Compiling to pdf...'
+		echo 'Compiling to ' . g:LatexBox_output_type . '...'
 		let l:cmd_output = system(l:cmd)
 		if !has('gui_running')
 			redraw!

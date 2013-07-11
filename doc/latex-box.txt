@@ -238,23 +238,23 @@ Compilation ~
         Compile with latexmk.
         See |g:LatexBox_latexmk_async|, |g:LatexBox_latexmk_options|, and
         |g:LatexBox_latexmk_preview_continuously|.
-*:LatexmkForce*
-        Force compilation with latexmk in background.
+*:Latexmk!*
+        Force compilation with latexmk (runs latexmk with "-g" option).
 *:LatexmkClean*
         Clean temporary output from LaTeX.
-*:LatexmkCleanAll*
+*:LatexmkClean!*
         Clean all output from LaTeX.
-*:LatexmkStop*
-        Stop latexmk if it is running.
 *:LatexmkStatus*
         Show the running status of latexmk for the current buffer.
-*:LatexmkStatusDetailed*
+*:LatexmkStatus!*
         Show the running status of latexmk for all buffers with process group
-        ID's (only available when |g:LatexBox_latexmk_async| is set to 1).
+        ID's or PID's.
+*:LatexmkStop*
+        Stop latexmk if it is running.
 *:LatexErrors*
         Load the log file for the current document and jump to the first error.
 
-Note: The commands |:LatexmkStop| and |:LatexmkStatus| are only available when
+Note: The commands |:LatexmkStop| and |:LatexmkStatus| are only relevant when
 |g:LatexBox_latexmk_async| or |g:LatexBox_latexmk_preview_continuously| is
 set.
 
@@ -305,17 +305,17 @@ Compilation ~
 
 <LocalLeader>ll                                                     |:Latexmk|
         Compile with latexmk.
-<LocalLeader>lL                                                |:LatexmkForce|
-        Force compilation with latexmk in background.
+<LocalLeader>lL                                                    |:Latexmk!|
+        Force compilation with latexmk.
 <LocalLeader>lc                                                |:LatexmkClean|
         Clean temporary output from LaTeX.
-<LocalLeader>lC                                             |:LatexmkCleanAll|
+<LocalLeader>lC                                               |:LatexmkClean!|
         Clean all output from LaTeX.
 <LocalLeader>lk                                                 |:LatexmkStop|
         Stop latexmk if it is running.
 <LocalLeader>lg                                               |:LatexmkStatus|
         Show the running status of latexmk for the current buffer.
-<LocalLeader>lG                                       |:LatexmkStatusDetailed|
+<LocalLeader>lG                                              |:LatexmkStatus!|
         Show the running status of latexmk for all buffers with process group
         ID's.
 <LocalLeader>le                                                 |:LatexErrors|
@@ -508,8 +508,7 @@ Compilation ~
         Run latexmk in continuous mode (i.e. with the "-pvc" option).
         Latexmk will track the currently edited file for writes and
         recompile automatically when necessary, without hanging VIM. Note that
-        unless the |g:LatexBox_latexmk_async| option is also set, this will
-        disable automatic error loading.
+        this will disable automatic error loading.
 
 *g:LatexBox_latexmk_options*                    Default: ""
         Additional options to pass to latexmk during compilation, e.g, "-d".

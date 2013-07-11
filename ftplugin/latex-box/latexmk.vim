@@ -363,14 +363,13 @@ endfunction
 
 command! -bang	Latexmk			call LatexBox_Latexmk(<q-bang> == "!")
 command! -bang	LatexmkClean	call LatexBox_LatexmkClean(<q-bang> == "!")
+command! -bang	LatexmkStatus	call LatexBox_LatexmkStatus(<q-bang> == "!")
+command! LatexmkStop			call LatexBox_LatexmkStop(0)
 command! LatexErrors			call LatexBox_LatexErrors(-1)
 
 if g:LatexBox_latexmk_async || g:LatexBox_latexmk_preview_continuously
 	autocmd BufUnload <buffer> 	call LatexBox_LatexmkStop(1)
 	autocmd VimLeave * 			call <SID>kill_all_latexmk_processes()
-
-	command! -bang	LatexmkStatus		call LatexBox_LatexmkStatus(<q-bang> == "!")
-	command! LatexmkStop				call LatexBox_LatexmkStop(0)
 endif
 
 " }}}

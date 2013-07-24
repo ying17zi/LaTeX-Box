@@ -129,14 +129,40 @@ endfunction
 " Latexmk {{{
 function! LatexBox_Latexmk(force)
 	" Define often used names
-	let basename = LatexBox_GetTexBasename(1)
-	let basenamex = fnamemodify(basepath, ':t')
+	let basepath = LatexBox_GetTexBasename(1)
+	let basename = fnamemodify(basepath, ':t')
+	let texroot = shellescape(LatexBox_GetTexRoot())
+	let mainfile = fnameescape(fnamemodify(LatexBox_GetMainTexFile(), ':t'))
 
 	" Check if already running
 	if has_key(g:latexmk_running_pids, basepath)
-		echomsg "latexmk is already running for `" . basenamex . "'"
+		echomsg "latexmk is already running for `" . basename . "'"
 		return
 	endif
+
+	" Set wrap width in log file
+	let max_print_line = 2000
+	if match(&shell, '/tcsh$') >= 0
+		let env = 'setenv max_print_line ' . max_print_line . '; '
+	else
+		let env = 'max_print_line=' . max_print_line
+	endif
+
+	" Set latexmk command with options
+	let cmd = 'cd ' . texroot . ';'
+	let cmd .= env . ' latexmk'
+	let cmd .= ' -' . g:LatexBox_output_type 
+	let cmd .= ' -quiet '
+	let cmd .= g:LatexBox_latexmk_options
+	if a:force
+		let cmd .= ' -g'
+	endif
+	if g:LatexBox_latexmk_preview_continuously
+		let cmd .= ' -pvc'
+	endif
+	let cmd .= " -e '$pdflatex =~ s/ / -file-line-error /'"
+	let cmd .= " -e '$latex =~ s/ / -file-line-error /'"
+	let cmd .= ' ' . mainfile
 
 	if g:LatexBox_latexmk_async
 		" Check if VIM server exists
@@ -149,69 +175,35 @@ function! LatexBox_Latexmk(force)
 		" Start vim server if necessary
 		call s:setup_vim_server()
 
-		let callsetpid = s:SIDWrap('LatexmkSetPID')
-		let callback = s:SIDWrap('LatexmkCallback')
+		" Define callback to set the pid
+		let callsetpid = shellescape(s:SIDWrap('LatexmkSetPID'))
+		let vimsetpid = g:vim_program . ' --servername ' . v:servername
+					\ . ' --remote-expr ' . callsetpid
+					\ . '\(\"' . basepath . '\",$$\)'
 
-		let l:options = '-' . g:LatexBox_output_type . ' -quiet ' . g:LatexBox_latexmk_options
-		if a:force
-			let l:options .= ' -g'
-		endif
-		if g:LatexBox_latexmk_preview_continuously
-			let l:options .= ' -pvc'
-		endif
-		let l:options .= " -e '$pdflatex =~ s/ / -file-line-error /'"
-		let l:options .= " -e '$latex =~ s/ / -file-line-error /'"
+		" Define callback after latexmk is finished
+		let callback = shellescape(s:SIDWrap('LatexmkCallback'))
+		let vimcmd = g:vim_program . ' --servername ' . v:servername
+					\ . ' --remote-expr ' . callback
+					\ . '\(\"' . basepath . '\",$?\)'
 
-		" callback to set the pid
-		let vimsetpid = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' .
-					\ shellescape(callsetpid) . '\(\"' . fnameescape(basename) . '\",$$\)'
+		" Define command
+		let cmd = '!(' . vimsetpid . ';'
+					\ . '(' . cmd . ');'
+					\ . vimcmd . ') >&/dev/null &'
 
-		" wrap width in log file
-		let max_print_line = 2000
-
-		" set environment
-		if match(&shell, '/tcsh$') >= 0
-			let l:env = 'setenv max_print_line ' . max_print_line . '; '
-		else
-			let l:env = 'max_print_line=' . max_print_line
-		endif
-
-		" latexmk command
-		let mainfile = fnamemodify(LatexBox_GetMainTexFile(), ':t')
-		let cmd = 'cd ' . shellescape(LatexBox_GetTexRoot()) . ' ; ' . l:env .
-					\ ' latexmk ' . l:options	. ' ' . mainfile
-
-		" callback after latexmk is finished
-		let vimcmd = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' .
-					\ shellescape(callback) . '\(\"' . fnameescape(basename) . '\",$?\)'
-
-		silent execute '! ( ' . vimsetpid . ' ; ( ' . cmd . ' ) ; ' . vimcmd . ' ) >&/dev/null &'
+		echo 'Compiling to ' . g:LatexBox_output_type . '...'
+		silent execute cmd
 	else
-		let texroot = LatexBox_GetTexRoot()
-		let mainfile = fnamemodify(LatexBox_GetMainTexFile(), ':t')
-		let l:cmd = 'cd ' . shellescape(texroot) . ' ;'
-		let l:cmd .= 'latexmk -' . g:LatexBox_output_type . ' '
-		if a:force
-			let l:cmd .= ' -g'
-		endif
+		" Define command
+		let cmd .= '>/dev/null'
 		if g:LatexBox_latexmk_preview_continuously
-			let l:cmd .= ' -pvc'
-		endif
-		let l:cmd .= g:LatexBox_latexmk_options
-		let l:cmd .= ' -silent'
-		let l:cmd .= " -e '$pdflatex =~ s/ / -file-line-error /'"
-		let l:cmd .= " -e '$latex =~ s/ / -file-line-error /'"
-		let l:cmd .= ' ' . shellescape(mainfile)
-
-		if g:LatexBox_latexmk_preview_continuously
-			let l:cmd .= '>/dev/null &'
-		else
-			let l:cmd .= '>/dev/null'
+			let cmd .= ' &'
 		endif
 
 		" Execute command
 		echo 'Compiling to ' . g:LatexBox_output_type . '...'
-		let l:cmd_output = system(l:cmd)
+		let cmd_output = system(cmd)
 
 		" Check for errors or save PID
 		if !g:LatexBox_latexmk_preview_continuously
@@ -229,7 +221,7 @@ function! LatexBox_Latexmk(force)
 		else
 			" Save PID in order to be able to kill the process when wanted.
 			let pid = substitute(system('pgrep -f ' . mainfile),'\D','','')
-			let g:latexmk_running_pids[basename] = pid
+			let g:latexmk_running_pids[basepath] = pid
 		endif
 	endif
 

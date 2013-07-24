@@ -78,25 +78,22 @@ endfunction
 
 " Setup for vim-server {{{
 
-if g:LatexBox_latexmk_async
+function! s:SIDWrap(func)
+	if !exists('s:SID')
+		let s:SID = matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
+	endif
+	return s:SID . a:func
+endfunction
 
-	function! s:GetSID()
-		return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
-	endfunction
+function! s:LatexmkCallback(basename, status)
+	" only remove the pid if not in continuous mode
+	if !g:LatexBox_latexmk_preview_continuously
+		call remove(g:latexmk_running_pids, a:basename)
+		call LatexBox_LatexErrors(a:status, a:basename)
+	endif
+endfunction
 
-	function! s:SIDWrap(func)
-		return s:SID . a:func
-	endfunction
-
-	function! s:LatexmkCallback(basename, status)
-		" only remove the pid if not in continuous mode
-		if !g:LatexBox_latexmk_preview_continuously
-			call remove(g:latexmk_running_pids, a:basename)
-			call LatexBox_LatexErrors(a:status, a:basename)
-		endif
-	endfunction
-
-	let s:SID = s:GetSID()
+function! s:setup_vim_server()
 
 	if !exists('g:vim_program')
 
@@ -128,7 +125,7 @@ if g:LatexBox_latexmk_async
 		endif
 	endif
 
-endif
+endfunction
 
 " }}}
 
@@ -145,6 +142,8 @@ function! LatexBox_Latexmk(force)
 
 	if g:LatexBox_latexmk_async
 		" compile in the background using vim-server
+
+		call s:setup_vim_server()
 
 		if has_key(g:latexmk_running_pids, basename)
 			echomsg "latexmk is already running for `" . fnamemodify(basename, ':t') . "'"

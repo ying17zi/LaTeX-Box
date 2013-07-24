@@ -188,8 +188,11 @@ function! LatexBox_Latexmk(force)
 					\ . '\(\"' . basepath . '\",$?\)'
 
 		" Define command
+		" Here we escape '%' because it may be given as a user option through
+		" g:LatexBox_latexmk_options, for instance with an options like
+		" g:Latex..._options = "-pdflatex='pdflatex -synctex=1 \%O \%S'"
 		let cmd = '!(' . vimsetpid . ';'
-					\ . '(' . cmd . ');'
+					\ . '(' . escape(cmd, '%') . ');'
 					\ . vimcmd . ') >&/dev/null &'
 
 		echo 'Compiling to ' . g:LatexBox_output_type . '...'

@@ -77,7 +77,6 @@ endfunction
 " }}}
 
 " Setup for vim-server {{{
-
 function! s:SIDWrap(func)
 	if !exists('s:SID')
 		let s:SID = matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
@@ -86,7 +85,7 @@ function! s:SIDWrap(func)
 endfunction
 
 function! s:LatexmkCallback(basename, status)
-	" only remove the pid if not in continuous mode
+	" Only remove the pid if not in continuous mode
 	if !g:LatexBox_latexmk_preview_continuously
 		call remove(g:latexmk_running_pids, a:basename)
 		call LatexBox_LatexErrors(a:status, a:basename)
@@ -94,7 +93,6 @@ function! s:LatexmkCallback(basename, status)
 endfunction
 
 function! s:setup_vim_server()
-
 	if !exists('g:vim_program')
 
 		if match(&shell, '/\(bash\|zsh\)$') >= 0
@@ -118,37 +116,38 @@ function! s:setup_vim_server()
 
 		if empty(g:vim_program)
 			if has('gui_macvim')
-				let g:vim_program = '/Applications/MacVim.app/Contents/MacOS/Vim -g'
+				let g:vim_program
+						\ = '/Applications/MacVim.app/Contents/MacOS/Vim -g'
 			else
 				let g:vim_program = v:progname
 			endif
 		endif
 	endif
-
 endfunction
-
 " }}}
 
 " Latexmk {{{
 function! LatexBox_Latexmk(force)
+	" Define often used names
+	let basename = LatexBox_GetTexBasename(1)
+	let basenamex = fnamemodify(basepath, ':t')
 
-	if g:LatexBox_latexmk_async && empty(v:servername)
-		echoerr "cannot run latexmk in background without a VIM server"
-		echoerr "set g:LatexBox_latexmk_async to 0 to change compiling mode"
+	" Check if already running
+	if has_key(g:latexmk_running_pids, basepath)
+		echomsg "latexmk is already running for `" . basenamex . "'"
 		return
 	endif
 
-	let basename = LatexBox_GetTexBasename(1)
-
 	if g:LatexBox_latexmk_async
-		" compile in the background using vim-server
-
-		call s:setup_vim_server()
-
-		if has_key(g:latexmk_running_pids, basename)
-			echomsg "latexmk is already running for `" . fnamemodify(basename, ':t') . "'"
+		" Check if VIM server exists
+		if empty(v:servername)
+			echoerr "cannot run latexmk in background without a VIM server"
+			echoerr "set g:LatexBox_latexmk_async to 0 to change compiling mode"
 			return
 		endif
+
+		" Start vim server if necessary
+		call s:setup_vim_server()
 
 		let callsetpid = s:SIDWrap('LatexmkSetPID')
 		let callback = s:SIDWrap('LatexmkCallback')
@@ -187,18 +186,7 @@ function! LatexBox_Latexmk(force)
 					\ shellescape(callback) . '\(\"' . fnameescape(basename) . '\",$?\)'
 
 		silent execute '! ( ' . vimsetpid . ' ; ( ' . cmd . ' ) ; ' . vimcmd . ' ) >&/dev/null &'
-		if !has("gui_running")
-			redraw!
-		endif
-
 	else
-		" compile directly
-
-		if g:LatexBox_latexmk_preview_continuously && has_key(g:latexmk_running_pids, basename)
-			echomsg "latexmk is already running for `" . fnamemodify(basename, ':t') . "'"
-			return
-		endif
-
 		let texroot = LatexBox_GetTexRoot()
 		let mainfile = fnamemodify(LatexBox_GetMainTexFile(), ':t')
 		let l:cmd = 'cd ' . shellescape(texroot) . ' ;'
@@ -224,16 +212,16 @@ function! LatexBox_Latexmk(force)
 		" Execute command
 		echo 'Compiling to ' . g:LatexBox_output_type . '...'
 		let l:cmd_output = system(l:cmd)
-		if !has('gui_running')
-			redraw!
-		endif
 
+		" Check for errors or save PID
 		if !g:LatexBox_latexmk_preview_continuously
-			" check for errors
+			" Check for errors
 			call LatexBox_LatexErrors(v:shell_error)
 			if v:shell_error > 0
-				echomsg "Error (latexmk exited with status " . v:shell_error . ")."
-			elseif match(l:cmd_output, 'Rule') > -1
+				echomsg "Error (latexmk exited with status "
+							\ . v:shell_error
+							\ . ")."
+			elseif match(cmd_output, 'Rule') > -1
 				echomsg "Success!"
 			else
 				echomsg "No file change detected. Skipping."
@@ -243,9 +231,12 @@ function! LatexBox_Latexmk(force)
 			let pid = substitute(system('pgrep -f ' . mainfile),'\D','','')
 			let g:latexmk_running_pids[basename] = pid
 		endif
-
 	endif
 
+	" Redraw screen if necessary
+	if !has("gui_running")
+		redraw!
+	endif
 endfunction
 " }}}
 

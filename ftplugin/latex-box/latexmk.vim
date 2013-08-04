@@ -25,7 +25,7 @@ endif
 
 " Process ID management (used for asynchronous and continuous mode) {{{
 
-" dictionary of latexmk PID's (basename: pid)
+" A dictionary of latexmk PID's (basename: pid)
 if !exists('g:latexmk_running_pids')
 	let g:latexmk_running_pids = {}
 endif
@@ -164,7 +164,7 @@ function! LatexBox_Latexmk(force)
 		let cmd = 'cd ' . texroot . ' && '
 	endif
 	let cmd .= env . ' latexmk'
-	let cmd .= ' -' . g:LatexBox_output_type 
+	let cmd .= ' -' . g:LatexBox_output_type
 	let cmd .= ' -quiet '
 	let cmd .= g:LatexBox_latexmk_options
 	if a:force
@@ -231,8 +231,8 @@ function! LatexBox_Latexmk(force)
 			                        \ . ' --remote-expr ' . callback
 
 			" Define command
-			" Here we escape '%' because it may be given as a user option through
-			" g:LatexBox_latexmk_options, for instance with an options like
+			" Note: Here we escape '%' because it may be given as a user option
+			" through g:LatexBox_latexmk_options, for instance with
 			" g:Latex..._options = "-pdflatex='pdflatex -synctex=1 \%O \%S'"
 			let cmd = vimsetpid . ' ; ' . escape(cmd, '%') . ' ; ' . vimcmd
 			let cmd = '! (' . cmd . ') >/dev/null &'
@@ -365,13 +365,11 @@ function! LatexBox_LatexErrors(status, ...)
 			wincmd p
 		endif
 	endif
-
 endfunction
 " }}}
 
 " LatexmkStatus {{{
 function! LatexBox_LatexmkStatus(detailed)
-
 	if a:detailed
 		if empty(g:latexmk_running_pids)
 			echo "latexmk is not running"
@@ -393,7 +391,6 @@ function! LatexBox_LatexmkStatus(detailed)
 			echo "latexmk is not running"
 		endif
 	endif
-
 endfunction
 " }}}
 
@@ -408,7 +405,8 @@ function! LatexBox_LatexmkStop(silent)
 		endif
 	else
 		if !a:silent
-			echoerr "latexmk is not running for `" . fnamemodify(basename, ':t') . "'"
+			echoerr "latexmk is not running for `"
+						\ . fnamemodify(basename, ':t') . "'"
 		endif
 	endif
 endfunction

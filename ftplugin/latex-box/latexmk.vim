@@ -359,7 +359,7 @@ function! LatexBox_LatexErrors(status, ...)
 
 		" Only open window when an error/warning is detected
 		if g:LatexBox_quickfix
-			botright cw
+			belowright cw
 			if g:LatexBox_quickfix==2
 				wincmd p
 			endif

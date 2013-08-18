@@ -254,6 +254,7 @@ function! LatexBox_Latexmk(force)
 			else
 				let cmd = '!' . cmd . ' &'
 			endif
+			echo 'Compiling to ' . g:LatexBox_output_type . ' ...'
 			silent execute cmd
 
 			" Save PID in order to be able to kill the process when wanted.
@@ -272,21 +273,10 @@ function! LatexBox_Latexmk(force)
 				let g:latexmk_running_pids[basepath] = pid
 			endif
 		else
-			" Execute command
-			echo 'Compiling to ' . g:LatexBox_output_type . '...'
-			let cmd_output = system(cmd)
-
-			" Check for errors
+			" Execute command and check for errors
+			echo 'Compiling to ' . g:LatexBox_output_type . ' ... (async off!)'
+			call system(cmd)
 			call LatexBox_LatexErrors(v:shell_error)
-			if v:shell_error > 0
-				echomsg "Error (latexmk exited with status "
-							\ . v:shell_error
-							\ . ")."
-			elseif match(cmd_output, 'Rule') > -1
-				echomsg "Success!"
-			else
-				echomsg "No file change detected. Skipping."
-			endif
 		endif
 	endif
 
@@ -355,14 +345,24 @@ function! LatexBox_LatexErrors(status, ...)
 		execute 'lcd ' . l:cwd
 	endtry
 
-	" always open window if started by LatexErrors command
+	" Always open window if started by LatexErrors command
 	if a:status < 0
 		botright copen
-	" otherwise only when an error/warning is detected
-	elseif g:LatexBox_quickfix
-		botright cw
-		if g:LatexBox_quickfix==2
-			wincmd p
+	else
+		" Write status message to screen
+		redraw
+		if a:status > 0 || len(getqflist())>1
+			echomsg 'Compiling to ' . g:LatexBox_output_type . ' ... failed!'
+		else
+			echomsg 'Compiling to ' . g:LatexBox_output_type . ' ... success!'
+		endif
+
+		" Only open window when an error/warning is detected
+		if g:LatexBox_quickfix
+			botright cw
+			if g:LatexBox_quickfix==2
+				wincmd p
+			endif
 		endif
 	endif
 endfunction

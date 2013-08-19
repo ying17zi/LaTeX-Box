@@ -238,7 +238,12 @@ function! LatexBox_Latexmk(force)
 			let cmd = '! (' . cmd . ') >/dev/null &'
 		endif
 
-		echo 'Compiling to ' . g:LatexBox_output_type . '...'
+		if g:LatexBox_latexmk_preview_continuously
+			echo 'Compiling to ' . g:LatexBox_output_type
+						\ . ' with continuous preview.'
+		else
+			echo 'Compiling to ' . g:LatexBox_output_type . ' ...'
+		endif
 		silent execute cmd
 	else
 		" Define command

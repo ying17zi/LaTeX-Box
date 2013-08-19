@@ -401,18 +401,16 @@ endfunction
 
 " LatexmkStop {{{
 function! LatexBox_LatexmkStop(silent)
-	let basename = LatexBox_GetTexBasename(1)
 	if has_key(g:latexmk_running_pids, basename)
+		let basename = LatexBox_GetTexBasename(1)
 		call s:kill_latexmk_process(g:latexmk_running_pids[basename])
 		call remove(g:latexmk_running_pids, basename)
 		if !a:silent
 			echomsg "latexmk stopped for `" . fnamemodify(basename, ':t') . "'"
 		endif
-	else
-		if !a:silent
-			echoerr "latexmk is not running for `"
-						\ . fnamemodify(basename, ':t') . "'"
-		endif
+	elseif !a:silent
+		let basename = fnamemodify(LatexBox_GetTexBasename(1), ':t')
+		echoerr "latexmk is not running for `" . basename . "'"
 	endif
 endfunction
 " }}}

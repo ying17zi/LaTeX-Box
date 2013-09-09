@@ -395,10 +395,13 @@ function! s:ReadTOC(auxfile, texfile, ...)
 		if len(tree[1]) > 3 && empty(tree[1][1])
 			call remove(tree[1], 1)
 		endif
-		let secnum = ""
 		if len(tree[1]) > 1
 			if !empty(tree[1][1])
-				let secnum = tree[1][1][0]
+				let secnum = LatexBox_TreeToTex(tree[1][1])
+				let secnum = s:ConvertBack(secnum)
+				let secnum = substitute(secnum, '\\\S\+\s', '', 'g')
+				let secnum = substitute(secnum, '\\\S\+{\(.\{-}\)}', '\1', 'g')
+				let secnum = substitute(secnum, '^{\+\|}\+$', '', 'g')
 			endif
 			let tree = tree[1][2:]
 		else

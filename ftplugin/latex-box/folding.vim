@@ -48,6 +48,9 @@ if !exists('g:LatexBox_fold_sections')
                 \ "subsubsection"
                 \ ]
 endif
+if !exists('g:LatexBox_fold_toc')
+    let g:LatexBox_fold_toc=0
+endif
 
 
 " {{{1 LatexBox_FoldLevel help functions

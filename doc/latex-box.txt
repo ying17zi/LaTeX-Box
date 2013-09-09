@@ -630,6 +630,9 @@ folded.
                         \ ]
         <
 
+*g:LatexBox_fold_toc*                   Default: 0
+        Turn on/off folding of TOC (|latex-box-commands-motion|)
+
 ==============================================================================
 
 FREQUENTLY ASKED QUESTIONS                                     *latex-box-FAQ*

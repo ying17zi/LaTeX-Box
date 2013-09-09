@@ -1,18 +1,23 @@
-" Settings {{{
+" {{{1 Settings
 setlocal buftype=nofile
-            \ bufhidden=wipe
-            \ nobuflisted
-            \ noswapfile
-            \ nowrap
-            \ cursorline
-            \ nonumber
-            \ nolist
-            \ tabstop=8
-            \ cole=0
-            \ cocu=nvic
-" }}}
+setlocal bufhidden=wipe
+setlocal nobuflisted
+setlocal noswapfile
+setlocal nowrap
+setlocal cursorline
+setlocal nonumber
+setlocal nolist
+setlocal tabstop=8
+setlocal cole=0
+setlocal cocu=nvic
+if g:LatexBox_fold_toc
+    setlocal foldmethod=expr
+    setlocal foldexpr=TOCFoldLevel(v:lnum)
+endif
+" }}}1
 
-" Functions {{{
+" {{{1 Functions
+" {{{2 TOCClose
 function! s:TOCClose()
     bwipeout
     if g:LatexBox_split_resize
@@ -20,6 +25,7 @@ function! s:TOCClose()
     endif
 endfunction
 
+" {{{2 TOCToggleNumbers
 function! s:TOCToggleNumbers()
     if b:toc_numbers
         setlocal conceallevel=3
@@ -30,6 +36,7 @@ function! s:TOCToggleNumbers()
     endif
 endfunction
 
+" {{{2 EscapeTitle
 function! s:EscapeTitle(titlestr)
     " Credit goes to Marcin Szamotulski for the following fix.  It allows to
     " match through commands added by TeX.
@@ -41,6 +48,7 @@ function! s:EscapeTitle(titlestr)
     return titlestr
 endfunction
 
+" {{{2 TOCActivate
 function! s:TOCActivate(close)
     let n = getpos('.')[1] - 1
 
@@ -98,9 +106,27 @@ function! s:TOCActivate(close)
         execute toc_wnr . 'wincmd w'
     endif
 endfunction
-" }}}
 
-" Mappings {{{
+" {{{2 TOCFoldLevel
+function! TOCFoldLevel(lnum)
+    let line  = getline(a:lnum)
+
+    " Fold simply based on section numbers such as 12.4.2
+    if line =~# '^[A-Za-z0-9]\+\s'
+        return ">1"
+    endif
+
+    " Don't fold options
+    if line =~# '^\s*$'
+        return 0
+    endif
+
+    " Return previous fold level
+    return "="
+endfunction
+" }}}1
+
+" {{{1 Mappings
 nnoremap <buffer> <silent> s :call <SID>TOCToggleNumbers()<CR>
 nnoremap <buffer> <silent> q :call <SID>TOCClose()<CR>
 nnoremap <buffer> <silent> <Esc> :call <SID>TOCClose()<CR>
@@ -113,6 +139,6 @@ nnoremap <buffer> <silent> <Esc>OA k
 nnoremap <buffer> <silent> <Esc>OB j
 nnoremap <buffer> <silent> <Esc>OC l
 nnoremap <buffer> <silent> <Esc>OD h
-" }}}
+" }}}1
 
-" vim:fdm=marker:ff=unix:noet:ts=4:sw=4
+" vim:fdm=marker:ff=unix:et:ts=4:sw=4

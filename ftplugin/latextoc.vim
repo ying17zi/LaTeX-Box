@@ -13,6 +13,7 @@ setlocal cocu=nvic
 if g:LatexBox_fold_toc
     setlocal foldmethod=expr
     setlocal foldexpr=TOCFoldLevel(v:lnum)
+    setlocal foldtext=TOCFoldText()
 endif
 " }}}1
 
@@ -110,9 +111,23 @@ endfunction
 " {{{2 TOCFoldLevel
 function! TOCFoldLevel(lnum)
     let line  = getline(a:lnum)
+    let match_s1 = line =~# '^\w\+\s'
+    let match_s2 = line =~# '^\w\+\.\w\+\s'
+    let match_s3 = line =~# '^\w\+\.\w\+\.\w\+\s'
 
-    " Fold simply based on section numbers such as 12.4.2
-    if line =~# '^[A-Za-z0-9]\+\s'
+    if g:LatexBox_fold_toc_levels >= 3
+        if match_s3
+            return ">3"
+        endif
+    endif
+
+    if g:LatexBox_fold_toc_levels >= 2
+        if match_s2
+            return ">2"
+        endif
+    endif
+
+    if match_s1
         return ">1"
     endif
 
@@ -124,6 +139,12 @@ function! TOCFoldLevel(lnum)
     " Return previous fold level
     return "="
 endfunction
+" {{{2 TOCFoldText
+function! TOCFoldText()
+    let parts = matchlist(getline(v:foldstart), '^\(.*\)\t\(.*\)$')
+    return printf('%-8s%-72s', parts[1], parts[2])
+endfunction
+
 " }}}1
 
 " {{{1 Mappings

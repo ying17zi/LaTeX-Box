@@ -51,6 +51,9 @@ endif
 if !exists('g:LatexBox_fold_toc')
     let g:LatexBox_fold_toc=0
 endif
+if !exists('g:LatexBox_fold_toc_levels')
+    let g:LatexBox_fold_toc_levels=1
+endif
 
 
 " {{{1 LatexBox_FoldLevel help functions

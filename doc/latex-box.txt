@@ -635,7 +635,10 @@ folded.
         <
 
 *g:LatexBox_fold_toc*                   Default: 0
-        Turn on/off folding of TOC (|latex-box-commands-motion|)
+        Turn on/off folding of TOC (|latex-box-commands-motion|).
+
+*g:LatexBox_fold_toc_levels*            Default: 1
+        Set number of section levels to fold in TOC.
 
 ==============================================================================
 

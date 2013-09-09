@@ -437,6 +437,9 @@ function! LatexBox_TOC(...)
 			" Supplying an argument to this function causes toggling instead
 			" of jumping to the TOC window
 			silent execute 'bwipeout' . bufnr('LaTeX TOC')
+			if g:LatexBox_split_resize
+				silent exe "set columns+=" . g:LatexBox_split_width
+			endif
 		endif
 		return
 	endif
@@ -450,6 +453,9 @@ function! LatexBox_TOC(...)
 	let closest_index = s:FindClosestSection(toc,fileindices)
 
 	" Create TOC window and set local settings
+	if g:LatexBox_split_resize
+		silent exe "set columns+=" . g:LatexBox_split_width
+	endif
 	silent exe g:LatexBox_split_side g:LatexBox_split_width . 'vnew LaTeX\ TOC'
 	let b:toc = toc
 	let b:toc_numbers = 1

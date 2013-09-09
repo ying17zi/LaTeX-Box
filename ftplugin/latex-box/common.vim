@@ -58,6 +58,11 @@ endif
 if !exists('g:LatexBox_split_side')
 	let g:LatexBox_split_side = "leftabove"
 endif
+
+" Resize when split?
+if !exists('g:LatexBox_split_resize')
+	let g:LatexBox_split_resize = 0
+endif
 " }}}
 
 " Filename utilities {{{

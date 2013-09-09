@@ -13,6 +13,13 @@ setlocal buftype=nofile
 " }}}
 
 " Functions {{{
+function! s:TOCClose()
+    bwipeout
+    if g:LatexBox_split_resize
+        silent exe "set columns-=" . g:LatexBox_split_width
+    endif
+endfunction
+
 function! s:TOCToggleNumbers()
     if b:toc_numbers
         setlocal conceallevel=3
@@ -71,7 +78,6 @@ function! s:TOCActivate(close)
 
     execute 'buffer! ' . bnr
 
-
     " skip duplicates
     while duplicates > 0
         if search('\\' . entry['level'] . '\_\s*{' . titlestr . '}', 'ws')
@@ -85,6 +91,9 @@ function! s:TOCActivate(close)
 
     if a:close
         execute 'bwipeout ' . toc_bnr
+        if g:LatexBox_split_resize
+            silent exe "set columns-=" . g:LatexBox_split_width
+        endif
     else
         execute toc_wnr . 'wincmd w'
     endif
@@ -93,8 +102,8 @@ endfunction
 
 " Mappings {{{
 nnoremap <buffer> <silent> s :call <SID>TOCToggleNumbers()<CR>
-nnoremap <buffer> <silent> q :bwipeout<CR>
-nnoremap <buffer> <silent> <Esc> :bwipeout<CR>
+nnoremap <buffer> <silent> q :call <SID>TOCClose()<CR>
+nnoremap <buffer> <silent> <Esc> :call <SID>TOCClose()<CR>
 nnoremap <buffer> <silent> <Space> :call <SID>TOCActivate(0)<CR>
 nnoremap <buffer> <silent> <CR> :call <SID>TOCActivate(1)<CR>
 nnoremap <buffer> <silent> <leftrelease> :call <SID>TOCActivate(0)<cr>

@@ -281,6 +281,7 @@ Motion ~
         Use Enter to navigate to selected entry.
         See |g:LatexBox_split_width|.
         See |g:LatexBox_split_side|.
+        See |g:LatexBox_split_resize|.
 *:LatexTOCToggle*
         Toggle the display of the table of contents.
 
@@ -569,6 +570,12 @@ Vim Windows ~
 *g:LatexBox_split_side*                 Default: "leftabove"
         On which side the vertically split windows appear. Used for the table
         of contents. Set to "rightbelow" to have it on the right side.
+
+*g:LatexBox_split_width*                Default: 0
+        Resize vim/gvim when opening new windows. Used for the table of
+        contents. If set to 1, it will add/remove |g:LatexBox_split_width| to
+        the number of columns dynamically, in order to keep the latex file open
+        with the desired width.
 
 ==============================================================================
 

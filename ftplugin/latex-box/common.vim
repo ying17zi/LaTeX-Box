@@ -63,6 +63,11 @@ endif
 if !exists('g:LatexBox_split_resize')
 	let g:LatexBox_split_resize = 0
 endif
+
+" Toggle help info
+if !exists('g:LatexBox_toc_hidehelp')
+	let g:LatexBox_toc_hidehelp = 0
+endif
 " }}}
 
 " Filename utilities {{{

@@ -577,6 +577,10 @@ Vim Windows ~
         the number of columns dynamically, in order to keep the latex file open
         with the desired width.
 
+*g:LatexBox_toc_hidehelp*               Default: 0
+        If enabled, the help info at the bottom of the TOC window will be
+        hidden.
+
 ==============================================================================
 
 FOLDING                                                    *latex-box-folding*

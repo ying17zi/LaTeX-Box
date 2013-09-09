@@ -466,11 +466,13 @@ function! LatexBox_TOC(...)
 	for entry in toc
 		call append('$', entry['number'] . "\t" . entry['text'])
 	endfor
-	call append('$', "")
-	call append('$', "<Esc>/q: close")
-	call append('$', "<Space>: jump")
-	call append('$', "<Enter>: jump and close")
-	call append('$', "s:       hide numbering")
+	if !g:LatexBox_toc_hidehelp
+		call append('$', "")
+		call append('$', "<Esc>/q: close")
+		call append('$', "<Space>: jump")
+		call append('$', "<Enter>: jump and close")
+		call append('$', "s:       hide numbering")
+	endif
 	0delete _
 
 	execute 'normal! ' . (closest_index + 1) . 'G'

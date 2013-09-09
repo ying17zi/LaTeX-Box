@@ -571,7 +571,7 @@ Vim Windows ~
         On which side the vertically split windows appear. Used for the table
         of contents. Set to "rightbelow" to have it on the right side.
 
-*g:LatexBox_split_width*                Default: 0
+*g:LatexBox_split_resize*               Default: 0
         Resize vim/gvim when opening new windows. Used for the table of
         contents. If set to 1, it will add/remove |g:LatexBox_split_width| to
         the number of columns dynamically, in order to keep the latex file open

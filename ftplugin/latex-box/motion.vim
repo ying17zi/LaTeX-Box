@@ -438,7 +438,7 @@ function! LatexBox_TOC(...)
 			" of jumping to the TOC window
 			silent execute 'bwipeout' . bufnr('LaTeX TOC')
 			if g:LatexBox_split_resize
-				silent exe "set columns+=" . g:LatexBox_split_width
+				silent exe "set columns-=" . g:LatexBox_split_width
 			endif
 		endif
 		return

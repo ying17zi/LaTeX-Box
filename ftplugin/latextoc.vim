@@ -20,10 +20,10 @@ endif
 " {{{1 Functions
 " {{{2 TOCClose
 function! s:TOCClose()
-    bwipeout
     if g:LatexBox_split_resize
         silent exe "set columns-=" . g:LatexBox_split_width
     endif
+    bwipeout
 endfunction
 
 " {{{2 TOCToggleNumbers
@@ -99,10 +99,10 @@ function! s:TOCActivate(close)
     endif
 
     if a:close
-        execute 'bwipeout ' . toc_bnr
         if g:LatexBox_split_resize
             silent exe "set columns-=" . g:LatexBox_split_width
         endif
+        execute 'bwipeout ' . toc_bnr
     else
         execute toc_wnr . 'wincmd w'
     endif

@@ -436,10 +436,10 @@ function! LatexBox_TOC(...)
 		else
 			" Supplying an argument to this function causes toggling instead
 			" of jumping to the TOC window
-			silent execute 'bwipeout' . bufnr('LaTeX TOC')
 			if g:LatexBox_split_resize
 				silent exe "set columns-=" . g:LatexBox_split_width
 			endif
+			silent execute 'bwipeout' . bufnr('LaTeX TOC')
 		endif
 		return
 	endif

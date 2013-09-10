@@ -177,6 +177,13 @@ function! LatexBox_Latexmk(force)
 	let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
 	let cmd .= ' ' . mainfile
 
+	" Redirect output to null
+	if has('win32')
+		let cmd .= ' >nul'
+	else
+		let cmd .= ' &>/dev/null'
+	endif
+
 	if g:LatexBox_latexmk_async
 		" Check if VIM server exists
 		if empty(v:servername)
@@ -246,13 +253,6 @@ function! LatexBox_Latexmk(force)
 		endif
 		silent execute cmd
 	else
-		" Define command
-		if has('win32')
-			let cmd .= ' >nul'
-		else
-			let cmd .= ' >/dev/null'
-		endif
-
 		if g:LatexBox_latexmk_preview_continuously
 			if has('win32')
 				let cmd = '!start /b cmd /s /c "' . cmd . '"'
@@ -274,7 +274,8 @@ function! LatexBox_Latexmk(force)
 				let pid = strpart(pids[0], 10)
 				let g:latexmk_running_pids[basepath] = pid
 			else
-				let pid = substitute(system('pgrep -f ' . mainfile),'\D','','')
+				let pid = substitute(system('pgrep -f "perl.*'
+							\ . mainfile . '"'),'\D','','')
 				let g:latexmk_running_pids[basepath] = pid
 			endif
 		else

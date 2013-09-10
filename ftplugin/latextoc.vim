@@ -4,6 +4,7 @@ setlocal bufhidden=wipe
 setlocal nobuflisted
 setlocal noswapfile
 setlocal nowrap
+setlocal nospell
 setlocal cursorline
 setlocal nonumber
 setlocal nolist

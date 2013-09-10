@@ -95,7 +95,7 @@ function! s:TOCActivate(close)
     endwhile
 
     if search('\\' . entry['level'] . '\_\s*{' . titlestr . '}', 'ws')
-        normal zt
+        normal zv
     endif
 
     if a:close

@@ -345,6 +345,11 @@ Insertion ~
         nmap <F5> <Plug>LatexChangeEnv
 <
 
+*<Plug>LatexToggleStarEnv*
+        Toggle star environments (add or remove star). Use with nmap, e.g.: >
+        nmap <F5> <Plug>LatexToggleStarEnv
+<
+
 *<Plug>LatexWrapSelection*
         Wrap the current selection in a LaTeX command. Use with vmap, e.g.: >
         vmap <F7> <Plug>LatexWrapSelection

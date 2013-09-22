@@ -46,7 +46,11 @@ This plugin provides:
 
 |latex-box-folding|                     FOLDING
 
+|latex-box-indent|                      INDENTATION
+
 |latex-box-FAQ|                         Frequently Asked Questions
+
+|latex-box-todo|                        TODO
 
 ==============================================================================
 
@@ -649,6 +653,15 @@ folded.
 
 *g:LatexBox_fold_toc_levels*            Default: 1
         Set number of section levels to fold in TOC.
+
+==============================================================================
+
+INDENDATION                                                 *latex-box-indent*
+
+*g:LatexBox_custom_indent*              Default: Not defined
+        The custom indent file of LaTeX-Box is ignored if this variable is
+        defined and set to 0.  This will revert to the default indentation
+        file from vim.
 
 ==============================================================================
 

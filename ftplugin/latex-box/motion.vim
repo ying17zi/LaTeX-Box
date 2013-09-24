@@ -75,7 +75,9 @@ function! s:FindMatchingPair(mode)
 	let lnum = line('.')
 	let cnum = searchpos('\A', 'cbnW', lnum)[1]
 	" if the previous char is a backslash
-	if strpart(getline(lnum), 0,  cnum-1) !~ notbslash . '$' | let cnum = cnum-1 | endif
+	if strpart(getline(lnum), cnum-2, 1) == '\'
+		let cnum = cnum-1
+	endif
 	let delim = matchstr(getline(lnum), '\C^'. anymatch , cnum - 1)
 
 	if empty(delim) || strlen(delim)+cnum-1< col('.')
@@ -89,7 +91,9 @@ function! s:FindMatchingPair(mode)
 			" if not found, move one char bacward and search
 			let cnum = searchpos('\A', 'bnW', lnum)[1]
 			" if the previous char is a backslash
-			if strpart(getline(lnum), 0,  cnum-1) !~ notbslash . '$' | let cnum = cnum-1 | endif
+			if strpart(getline(lnum), cnum-2, 1) == '\'
+				let cnum = cnum-1
+			endif
 			let delim = matchstr(getline(lnum), '\C^'. anymatch , cnum - 1)
 			if empty(delim) || strlen(delim)+cnum< col('.') | return | endif
 		elseif a:mode =~ 'h'

@@ -296,6 +296,11 @@ function! s:ConvertBack(line)
 		let line = substitute(line, "\\\\IeC\s*{\\\\^i}", 'ì', 'g')
 		let line = substitute(line, "\\\\IeC\s*{\\\\¨i}", 'ï', 'g')
 		let line = substitute(line, "\\\\IeC\s*{\\\\\"i}", 'ï', 'g')
+		let line = substitute(line, "\\\\IeC\s*{\\\\'\\\\i}", 'í', 'g')
+
+		let line = substitute(line, "\\\\IeC\s*{\\\\'n}", 'ń', 'g')
+		let line = substitute(line, "\\\\IeC\s*{\\\\`n}", 'ǹ', 'g')
+		let line = substitute(line, "\\\\IeC\s*{\\\\\\~n}", 'ñ', 'g')
 
 		let line = substitute(line, "\\\\IeC\s*{\\\\'o}", 'ó', 'g')
 		let line = substitute(line, "\\\\IeC\s*{\\\\`o}", 'ò', 'g')

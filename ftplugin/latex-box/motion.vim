@@ -441,23 +441,26 @@ function! s:FindClosestSection(toc, fileindices)
 	endif
 
 	let imax = len(a:fileindices[file])
-	let imin = 0
-	while imin < imax - 1
-		let i = (imax + imin) / 2
-		let tocindex = a:fileindices[file][i]
-		let entry = a:toc[tocindex]
-		let titlestr = entry['text']
-		let titlestr = escape(titlestr, '\')
-		let titlestr = substitute(titlestr, ' ', '\\_\\s\\+', 'g')
-		let [lnum, cnum] = searchpos('\\' . entry['level'] . '\_\s*{' . titlestr . '}', 'nW')
-		if lnum
-			let imax = i
-		else
-			let imin = i
-		endif
-	endwhile
-
-	return a:fileindices[file][imin]
+	if imax > 0
+		let imin = 0
+		while imin < imax - 1
+			let i = (imax + imin) / 2
+			let tocindex = a:fileindices[file][i]
+			let entry = a:toc[tocindex]
+			let titlestr = entry['text']
+			let titlestr = escape(titlestr, '\')
+			let titlestr = substitute(titlestr, ' ', '\\_\\s\\+', 'g')
+			let [lnum, cnum] = searchpos('\\' . entry['level'] . '\_\s*{' . titlestr . '}', 'nW')
+			if lnum
+				let imax = i
+			else
+				let imin = i
+			endif
+		endwhile
+		return a:fileindices[file][imin]
+	else
+		return 0
+	endif
 endfunction
 
 let s:ConvBackPats = map([

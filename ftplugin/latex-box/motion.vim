@@ -312,7 +312,7 @@ function! s:ReadTOC(auxfile, texfile, ...)
 		if included != ''
 			" append the input TOX to `toc` and `fileindices`
 			let newaux = prefix . '/' . included
-			let newtex = fnamemodify(fnamemodify(newaux, ':t:r') . '.tex', ':p')
+			let newtex = fnamemodify(newaux, ':r') . '.tex'
 			call s:ReadTOC(newaux, newtex, toc, fileindices)
 			continue
 		endif

@@ -253,12 +253,12 @@ function! LatexBox_BibSearch(regexp)
 					\ '\bibdata{' . bibdata . '}'], auxfile)
 
 		if has('win32')
-			let save_opt = &shellslash
-			set noshellslash
+			let l:old_shellslash = &l:shellslash
+			setlocal noshellslash
 			silent execute '! cd ' shellescape(LatexBox_GetTexRoot()) .
 						\ ' & bibtex -terse '
 						\ . fnamemodify(auxfile, ':t') . ' >nul'
-			silent execute 'set shellslash=' . save_opt
+			let &l:shellslash = l:old_shellslash
 		else
 			silent execute '! cd ' shellescape(LatexBox_GetTexRoot()) .
 						\ ' ; bibtex -terse '

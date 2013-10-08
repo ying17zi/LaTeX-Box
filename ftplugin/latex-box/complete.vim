@@ -272,6 +272,8 @@ function! LatexBox_BibSearch(regexp)
 			let matches = matchlist(line,
 						\ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
 			if !empty(matches) && !empty(matches[1])
+				let s:type_length = max([s:type_length,
+							\ len(matches[2]) + 3])
 				call add(res, {
 							\ 'key': matches[1],
 							\ 'type': matches[2],
@@ -308,6 +310,7 @@ endfunction
 " }}}
 
 " BibTeX completion {{{
+let s:type_length=0
 function! LatexBox_BibComplete(regexp)
 
 	" treat spaces as '.*' if needed
@@ -319,9 +322,12 @@ function! LatexBox_BibComplete(regexp)
 	endif
 
 	let res = []
+	let s:type_length = 4
 	for m in LatexBox_BibSearch(regexp)
 		let type = m['type']   == '' ? '[-]' : '[' . m['type']   . '] '
+		let type = printf('%-' . s:type_length . 's', type)
 		let auth = m['author'] == '' ? ''    :       m['author'][:20] . ' '
+		let auth = substitute(auth, '\~', ' ', 'g')
 		let year = m['year']   == '' ? ''    : '(' . m['year']   . ')'
 		let w = { 'word': m['key'],
 				\ 'abbr': type . auth . year,

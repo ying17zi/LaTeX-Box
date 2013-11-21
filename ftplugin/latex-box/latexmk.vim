@@ -262,10 +262,10 @@ function! LatexBox_Latexmk(force)
 			" Note: Here we escape '%' because it may be given as a user option
 			" through g:LatexBox_latexmk_options, for instance with
 			" g:Latex..._options = "-pdflatex='pdflatex -synctex=1 \%O \%S'"
-			let cmd = vimsetpid . ' ; ' \
-		              . 'env SUCCESSCMD=' . shellescape(svimcmd) . ' ' \
-		              . '    FAILURECMD=' . shellescape(fvimcmd) . ' ' \
-					  . escape(cmd, '%')
+			let cmd = vimsetpid . ' ; '
+						\ . 'export SUCCESSCMD=' . shellescape(svimcmd) . ' '
+						\ . '       FAILURECMD=' . shellescape(fvimcmd) . ' ; '
+						\ . escape(cmd, '%')
 			let cmd = '! (' . cmd . ') >/dev/null &'
 		endif
 

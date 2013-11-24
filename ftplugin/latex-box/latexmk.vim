@@ -188,8 +188,10 @@ function! LatexBox_Latexmk(force)
 	endif
 	let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
 	let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
-	let cmd .= ' -e ' . shellescape('$success_cmd = $ENV{SUCCESSCMD}')
-	let cmd .= ' -e ' . shellescape('$failure_cmd = $ENV{FAILURECMD}')
+	if g:LatexBox_latexmk_preview_continuously
+		let cmd .= ' -e ' . shellescape('$success_cmd = $ENV{SUCCESSCMD}')
+		let cmd .= ' -e ' . shellescape('$failure_cmd = $ENV{FAILURECMD}')
+	endif
 	let cmd .= ' ' . mainfile
 
 	" Redirect output to null
@@ -222,6 +224,9 @@ function! LatexBox_Latexmk(force)
 						\ . ' --remote-expr ' . shellescape(callsetpid)
 
 			" Define callback after latexmk is finished
+			let callback = callbackfunc . '(''' . basepath . ''', %LATEXERR%)'
+			let vimcmd = vim_program . ' --servername ' . v:servername
+						\ . ' --remote-expr ' . shellescape(callback)
 			let scallback = callbackfunc . '(''' . basepath . ''', 0)'
 			let svimcmd = vim_program . ' --servername ' . v:servername
 						\ . ' --remote-expr ' . shellescape(scallback)
@@ -230,17 +235,31 @@ function! LatexBox_Latexmk(force)
 						\ . ' --remote-expr ' . shellescape(fcallback)
 
 			let asyncbat = tempname() . '.bat'
-			call writefile(['setlocal',
-						\ 'set T=%TEMP%\sthUnique.tmp',
-						\ 'wmic process where (Name="WMIC.exe" AND CommandLine LIKE "%%%TIME%%%") '
-						\ . 'get ParentProcessId /value | find "ParentProcessId" >%T%',
-						\ 'set /P A=<%T%',
-						\ 'set CMDPID=%A:~16% & del %T%',
-						\ vimsetpid,
-						\ 'set SUCCESSCMD='.svimcmd,
-						\ 'set FAILURECMD='.fvimcmd,
-						\ cmd,
-						\ 'endlocal'], asyncbat)
+			if g:LatexBox_latexmk_preview_continuously
+				call writefile(['setlocal',
+							\ 'set T=%TEMP%\sthUnique.tmp',
+							\ 'wmic process where (Name="WMIC.exe" AND CommandLine LIKE "%%%TIME%%%") '
+							\ . 'get ParentProcessId /value | find "ParentProcessId" >%T%',
+							\ 'set /P A=<%T%',
+							\ 'set CMDPID=%A:~16% & del %T%',
+							\ vimsetpid,
+							\ 'set SUCCESSCMD='.svimcmd,
+							\ 'set FAILURECMD='.fvimcmd,
+							\ cmd,
+							\ 'endlocal'], asyncbat)
+			else
+				call writefile(['setlocal',
+							\ 'set T=%TEMP%\sthUnique.tmp',
+							\ 'wmic process where (Name="WMIC.exe" AND CommandLine LIKE "%%%TIME%%%") '
+							\ . 'get ParentProcessId /value | find "ParentProcessId" >%T%',
+							\ 'set /P A=<%T%',
+							\ 'set CMDPID=%A:~16% & del %T%',
+							\ vimsetpid,
+							\ cmd,
+							\ 'set LATEXERR=%ERRORLEVEL%',
+							\ vimcmd,
+							\ 'endlocal'], asyncbat)
+			endif
 
 			" Define command
 			let cmd = '!start /b ' . asyncbat . ' & del ' . asyncbat
@@ -251,6 +270,9 @@ function! LatexBox_Latexmk(force)
 			                        \ . ' --remote-expr ' . callsetpid
 
 			" Define callback after latexmk is finished
+			let callback = shellescape(callbackfunc).'"(\"'.basepath.'\",$?)"'
+			let vimcmd = g:vim_program . ' --servername ' . v:servername
+									\ . ' --remote-expr ' . callback
 			let scallback = shellescape(callbackfunc).'"(\"'.basepath.'\",0)"'
 			let svimcmd = g:vim_program . ' --servername ' . v:servername
 			                        \ . ' --remote-expr ' . scallback
@@ -262,10 +284,14 @@ function! LatexBox_Latexmk(force)
 			" Note: Here we escape '%' because it may be given as a user option
 			" through g:LatexBox_latexmk_options, for instance with
 			" g:Latex..._options = "-pdflatex='pdflatex -synctex=1 \%O \%S'"
-			let cmd = vimsetpid . ' ; '
+			if g:LatexBox_latexmk_preview_continuously
+				let cmd = vimsetpid . ' ; '
 						\ . 'export SUCCESSCMD=' . shellescape(svimcmd) . ' '
 						\ . '       FAILURECMD=' . shellescape(fvimcmd) . ' ; '
 						\ . escape(cmd, '%')
+			else
+				let cmd = vimsetpid . ' ; ' . escape(cmd, '%') . ' ; ' . vimcmd
+			endif
 			let cmd = '! (' . cmd . ') >/dev/null &'
 		endif
 

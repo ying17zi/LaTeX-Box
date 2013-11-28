@@ -104,7 +104,7 @@ function! s:setup_vim_server()
 		if has('win32')
 			" Just drop through to the default for windows
 		else
-			if match(&shell, '/\(bash\|zsh\)$') >= 0
+			if match(&shell, '\(bash\|zsh\)$') >= 0
 				let ppid = '$PPID'
 			else
 				let ppid = '$$'

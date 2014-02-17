@@ -106,13 +106,13 @@ function! LatexBox_Complete(findstart, base)
 		endwhile
 
 		let line_start = line[:pos-1]
-		if line_start =~ '\C\\begin\_\s*{$'
+		if line_start =~ '\m\C\\begin\_\s*{$'
 			let s:completion_type = 'begin'
-		elseif line_start =~ '\C\\end\_\s*{$'
+		elseif line_start =~ '\m\C\\end\_\s*{$'
 			let s:completion_type = 'end'
-		elseif line_start =~ g:LatexBox_ref_pattern . '$'
+		elseif line_start =~ '\m' . g:LatexBox_ref_pattern . '$'
 			let s:completion_type = 'ref'
-		elseif line_start =~ g:LatexBox_cite_pattern . '$'
+		elseif line_start =~ '\m' . g:LatexBox_cite_pattern . '$'
 			let s:completion_type = 'bib'
 			" check for multiple citations
 			let pos = col('.') - 1
@@ -369,7 +369,7 @@ function! s:ExtractLabels()
 			continue
 		endif
 
-		if 0 == search( '{\w*{', 'ce', lblline )
+		if 0 == search( '\m{\w*{', 'ce', lblline )
 		    let [lblline, lblbegin] = searchpos( '\\newlabel{', 'ecW' )
 		    continue
 		endif
@@ -382,7 +382,7 @@ function! s:ExtractLabels()
 		endif
 		let curnumber = strpart( getline( lblline ), numberbegin, numberend - numberbegin - 1 )
 
-		if 0 == search( '\w*{', 'ce', lblline )
+		if 0 == search( '\m\w*{', 'ce', lblline )
 		    let [lblline, lblbegin] = searchpos( '\\newlabel{', 'ecW' )
 		    continue
 		endif

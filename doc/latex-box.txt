@@ -288,6 +288,8 @@ Motion ~
         See |g:LatexBox_split_resize|.
 *:LatexTOCToggle*
         Toggle the display of the table of contents.
+*:LatexLabels*
+        Same as TOC but with regex-selected labels.
 
 Associated setting:
         |g:LatexBox_plaintext_toc| (set this if UTF8 conversion does not work)

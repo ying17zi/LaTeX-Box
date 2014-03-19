@@ -52,6 +52,11 @@ clone`.  This will typically be enough:
 
 Copy the directories to your `.vim/` folder.
 
+### Windows users
+
+Users working with (g)vim on Windows must have a Perl environment installed.
+Such an environment can be downloaded at : http://strawberryperl.com/
+
 ## Mirror information
 
 This is mirrored on 

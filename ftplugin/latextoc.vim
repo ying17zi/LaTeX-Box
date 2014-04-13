@@ -166,6 +166,7 @@ function! s:TOCOpenBuf(file)
         let bnr = bufnr(a:file)
     endif
     execute 'buffer! ' . bnr
+    normal gg
 
 endfunction
 

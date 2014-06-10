@@ -220,7 +220,7 @@ function! LatexBox_View()
 	endif
 	let cmd = g:LatexBox_viewer . ' ' . shellescape(outfile)
 	if has('win32')
-		let cmd = '!start /b' . cmd . ' >nul'
+		let cmd = '!start /b ' . cmd . ' >nul'
 	else
 		let cmd = '!' . cmd . ' &>/dev/null &'
 	endif

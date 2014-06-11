@@ -25,8 +25,20 @@ setlocal efm+=%E!\ %m
 " More info for undefined control sequences
 setlocal efm+=%Z<argument>\ %m
 
+" More info for some errors
+setlocal efm+=%Cl.%l\ %m
+
 " Show or ignore warnings
 if g:LatexBox_show_warnings
+	" Parse biblatex warnings
+	setlocal efm+=%-C(biblatex)%.%#in\ t%.%#
+	setlocal efm+=%-C(biblatex)%.%#Please\ v%.%#
+	setlocal efm+=%-C(biblatex)%.%#LaTeX\ a%.%#
+	setlocal efm+=%-Z(biblatex)%m
+
+	" Parse hyperref warnings
+	setlocal efm+=%-C(hyperref)%.%#on\ input\ line\ %l.
+
 	for w in g:LatexBox_ignore_warnings
 		let warning = escape(substitute(w, '[\,]', '%\\\\&', 'g'), ' ')
 		exe 'setlocal efm+=%-G%.%#'. warning .'%.%#'

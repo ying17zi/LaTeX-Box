@@ -438,8 +438,9 @@ endfunction
 
 function! s:log_contains_error(file)
 	let lines = readfile(a:file)
-	let error_regexp = '''^.*:\d\+: '''
-	let lines = filter(lines, 'v:val =~ ' . error_regexp)
+	let lines = filter(lines, 'v:val =~ ''^.*:\d\+: ''')
+	let lines = uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
+	let lines = filter(lines, 'filereadable(v:val)')
 	return len(lines) > 0
 endfunction
 " }}}

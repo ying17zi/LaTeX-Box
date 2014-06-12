@@ -361,8 +361,9 @@ function! s:ReadTOC(auxfile, texfile, ...)
 		endif
 		" parse section title
 		let text = LatexBox_TreeToTex(tree)
-		let text = substitute(text, '^{\+\|}\+$', '', 'g')
-		let text = substitute(text, '\*',         '', 'g')
+		let text = substitute(text, '^{\+\|}\+$',         '', 'g')
+		let text = substitute(text, '^\\nonumberline\s*', '', 'g')
+		let text = substitute(text, '\*',                 '', 'g')
 
 		" add TOC entry
 		call add(fileindices[texfile], len(toc))

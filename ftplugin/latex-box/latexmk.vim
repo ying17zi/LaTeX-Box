@@ -438,7 +438,7 @@ endfunction
 
 function! s:log_contains_error(file)
 	let lines = readfile(a:file)
-	let error_regexp = '''^\S*:\d\+: '''
+	let error_regexp = '''^.*:\d\+: '''
 	let lines = filter(lines, 'v:val =~ ' . error_regexp)
 	return len(lines) > 0
 endfunction

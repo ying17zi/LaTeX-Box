@@ -416,10 +416,15 @@ function! LatexBox_LatexErrors(status, ...)
 		" Write status message to screen
 		redraw
 		if a:status > 0 || len(getqflist())>1
-			echomsg 'Compiling to ' . g:LatexBox_output_type . ' ... failed!'
+			if s:log_contains_error(fnameescape(log))
+				let l:status_msg = ' ... failed!'
+			else
+				let l:status_msg = ' ... there were warnings!'
+			endif
 		else
-			echomsg 'Compiling to ' . g:LatexBox_output_type . ' ... success!'
+			let l:status_msg = ' ... success!'
 		endif
+		echomsg 'Compiling to ' . g:LatexBox_output_type . l:status_msg
 
 		" Only open window when an error/warning is detected
 		if g:LatexBox_quickfix
@@ -429,6 +434,13 @@ function! LatexBox_LatexErrors(status, ...)
 			endif
 		endif
 	endif
+endfunction
+
+function! s:log_contains_error(file)
+	let lines = readfile(a:file)
+	let error_regexp = '''^\S*:\d\+: '''
+	let lines = filter(lines, 'v:val =~ ' . error_regexp)
+	return len(lines) > 0
 endfunction
 " }}}
 

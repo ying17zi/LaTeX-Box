@@ -56,6 +56,7 @@ endif
 
 " Push file to file stack
 setlocal efm+=%+P**%f
+setlocal efm+=%+P**\"%f\"
 
 " Ignore unmatched lines
 setlocal efm+=%-G%.%#

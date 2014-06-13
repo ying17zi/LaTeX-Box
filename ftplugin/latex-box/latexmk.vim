@@ -440,7 +440,7 @@ function! s:log_contains_error(file)
 	let lines = readfile(a:file)
 	let lines = filter(lines, 'v:val =~ ''^.*:\d\+: ''')
 	let lines = uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
-	let lines = filter(lines, 'filereadable(v:val)')
+	let lines = filter(lines, 'filereadable(fnameescape(v:val))')
 	return len(lines) > 0
 endfunction
 " }}}

@@ -140,6 +140,8 @@ endfunction
 function! s:PromptForMainFile()
 	let saved_dir = getcwd()
 	execute 'cd ' . fnameescape(expand('%:p:h'))
+
+	" Prompt for file
 	let l:file = ''
 	while !filereadable(l:file)
 		let l:file = input('main LaTeX file: ', '', 'file')
@@ -148,6 +150,16 @@ function! s:PromptForMainFile()
 		endif
 	endwhile
 	let l:file = fnamemodify(l:file, ':p')
+
+	" Make persistent
+	let l:persistent = ''
+	while l:persistent !~ '\v^(y|n)'
+		let l:persistent = input('make choice persistent? (y, n) ')
+		if l:persistent == 'y'
+			call writefile([], l:file . '.latexmain')
+		endif
+	endwhile
+
 	execute 'cd ' . fnameescape(saved_dir)
 	return l:file
 endfunction

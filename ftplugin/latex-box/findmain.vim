@@ -1,4 +1,4 @@
-" Tex_GetMainFileName: gets the name of the main file being compiled. {{{
+" LatexBox_GetMainFileName: gets the name of the main file being compiled. {{{
 " Description:  returns the full path name of the main file.
 "               This function checks for the existence of a .latexmain file
 "               which might point to the location of a "main" latex file.
@@ -13,7 +13,8 @@
 "               NOTE: From version 1.6 onwards, this function always trims
 "               away the .latexmain part of the file name before applying the
 "               modifier argument.
-function! Tex_GetMainFileName(...)
+"               NOTE: This function is copied from the Latex-Suite project!
+function! LatexBox_GetMainFileName(...)
 	if a:0 > 0
 		let modifier = a:1
 	else

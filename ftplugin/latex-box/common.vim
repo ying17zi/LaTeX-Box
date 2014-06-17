@@ -127,8 +127,8 @@ function! LatexBox_GetMainTexFile()
 	endif
 
 	" 5. borrow the Vim-Latex-Suite method of finding it
-	if Tex_GetMainFileName() != expand('%:p')
-		let b:main_tex_file = Tex_GetMainFileName()
+	if LatexBox_GetMainFileName() != expand('%:p')
+		let b:main_tex_file = LatexBox_GetMainFileName()
 		return b:main_tex_file
 	endif
 

@@ -2,6 +2,7 @@
 "
 " Options
 " g:LatexBox_Folding       - Turn on/off folding
+" g:LatexBox_fold_text     - Turn on/off LatexBox fold text function
 " g:LatexBox_fold_preamble - Turn on/off folding of preamble
 " g:LatexBox_fold_parts    - Define parts (eq. appendix, frontmatter) to fold
 " g:LatexBox_fold_sections - Define section levels to fold
@@ -10,6 +11,9 @@
 
 " {{{1 Set options
 if exists('g:LatexBox_Folding') && g:LatexBox_Folding == 1
+    if !exists('g:LatexBox_fold_text')
+        let g:LatexBox_fold_text=1
+    endif
     if !exists('g:LatexBox_fold_preamble')
         let g:LatexBox_fold_preamble=1
     endif
@@ -45,7 +49,9 @@ if exists('g:LatexBox_Folding') && g:LatexBox_Folding == 1
 
     setl foldmethod=expr
     setl foldexpr=LatexBox_FoldLevel(v:lnum)
-    setl foldtext=LatexBox_FoldText()
+    if g:LatexBox_fold_text == 1
+        setl foldtext=LatexBox_FoldText()
+    endif
     "
     " The foldexpr function returns "=" for most lines, which means it can become
     " slow for large files.  The following is a hack that is based on this reply to

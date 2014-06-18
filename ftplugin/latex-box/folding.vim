@@ -2,6 +2,7 @@
 "
 " Options
 " g:LatexBox_Folding       - Turn on/off folding
+" g:LatexBox_fold_text     - Turn on/off LatexBox fold text function
 " g:LatexBox_fold_preamble - Turn on/off folding of preamble
 " g:LatexBox_fold_parts    - Define parts (eq. appendix, frontmatter) to fold
 " g:LatexBox_fold_sections - Define section levels to fold
@@ -10,9 +11,47 @@
 
 " {{{1 Set options
 if exists('g:LatexBox_Folding') && g:LatexBox_Folding == 1
+    if !exists('g:LatexBox_fold_text')
+        let g:LatexBox_fold_text=1
+    endif
+    if !exists('g:LatexBox_fold_preamble')
+        let g:LatexBox_fold_preamble=1
+    endif
+    if !exists('g:LatexBox_fold_envs')
+        let g:LatexBox_fold_envs=1
+    endif
+    if !exists('g:LatexBox_fold_envs_force')
+        let g:LatexBox_fold_envs_force = []
+    endif
+    if !exists('g:LatexBox_fold_parts')
+        let g:LatexBox_fold_parts=[
+                    \ "appendix",
+                    \ "frontmatter",
+                    \ "mainmatter",
+                    \ "backmatter"
+                    \ ]
+    endif
+    if !exists('g:LatexBox_fold_sections')
+        let g:LatexBox_fold_sections=[
+                    \ "part",
+                    \ "chapter",
+                    \ "section",
+                    \ "subsection",
+                    \ "subsubsection"
+                    \ ]
+    endif
+    if !exists('g:LatexBox_fold_toc')
+        let g:LatexBox_fold_toc=0
+    endif
+    if !exists('g:LatexBox_fold_toc_levels')
+        let g:LatexBox_fold_toc_levels=1
+    endif
+
     setl foldmethod=expr
     setl foldexpr=LatexBox_FoldLevel(v:lnum)
-    setl foldtext=LatexBox_FoldText()
+    if g:LatexBox_fold_text == 1
+        setl foldtext=LatexBox_FoldText()
+    endif
     "
     " The foldexpr function returns "=" for most lines, which means it can become
     " slow for large files.  The following is a hack that is based on this reply to
@@ -25,39 +64,6 @@ if exists('g:LatexBox_Folding') && g:LatexBox_Folding == 1
         autocmd InsertLeave *.tex setlocal foldmethod=expr
     augroup end
 endif
-if !exists('g:LatexBox_fold_preamble')
-    let g:LatexBox_fold_preamble=1
-endif
-if !exists('g:LatexBox_fold_envs')
-    let g:LatexBox_fold_envs=1
-endif
-if !exists('g:LatexBox_fold_envs_force')
-    let g:LatexBox_fold_envs_force = []
-endif
-if !exists('g:LatexBox_fold_parts')
-    let g:LatexBox_fold_parts=[
-                \ "appendix",
-                \ "frontmatter",
-                \ "mainmatter",
-                \ "backmatter"
-                \ ]
-endif
-if !exists('g:LatexBox_fold_sections')
-    let g:LatexBox_fold_sections=[
-                \ "part",
-                \ "chapter",
-                \ "section",
-                \ "subsection",
-                \ "subsubsection"
-                \ ]
-endif
-if !exists('g:LatexBox_fold_toc')
-    let g:LatexBox_fold_toc=0
-endif
-if !exists('g:LatexBox_fold_toc_levels')
-    let g:LatexBox_fold_toc_levels=1
-endif
-
 
 " {{{1 LatexBox_FoldLevel help functions
 
@@ -247,24 +253,13 @@ function! s:CaptionFrame(line)
     endif
 endfunction
 
-" {{{1 LatexBox_FoldText
-function! LatexBox_FoldText()
-    " Initialize
+function! LatexBox_FoldText_title()
     let line = getline(v:foldstart)
-    let nlines = v:foldend - v:foldstart + 1
-    let level = ''
     let title = 'Not defined'
-
-    " Fold level
-    let level = strpart(repeat('-', v:foldlevel-1) . '*',0,3)
-    if v:foldlevel > 3
-        let level = strpart(level, 1) . v:foldlevel
-    endif
-    let level = printf('%-3s', level)
 
     " Preamble
     if line =~ '\s*\\documentclass'
-        let title = "Preamble"
+        return "Preamble"
     endif
 
     " Parts, sections and fakesections
@@ -280,11 +275,11 @@ function! LatexBox_FoldText()
     elseif line =~ '\\appendix'
         let title = "Appendix"
     elseif line =~ secpat1 . '.*}'
-        let title =  matchstr(line, secpat1 . '\zs.*\ze}')
+        let title =  matchstr(line, secpat1 . '\zs.\{-}\ze}')
     elseif line =~ secpat1
         let title =  matchstr(line, secpat1 . '\zs.*')
     elseif line =~ secpat2 . '.*\]'
-        let title =  matchstr(line, secpat2 . '\zs.*\ze\]')
+        let title =  matchstr(line, secpat2 . '\zs.\{-}\ze\]')
     elseif line =~ secpat2
         let title =  matchstr(line, secpat2 . '\zs.*')
     elseif line =~ 'Fake' . sections . ':'
@@ -330,7 +325,22 @@ function! LatexBox_FoldText()
         endif
     endif
 
-    let title = strpart(title, 0, 68)
+    return title
+endfunction
+
+" {{{1 LatexBox_FoldText
+function! LatexBox_FoldText()
+    let nlines = v:foldend - v:foldstart + 1
+    let title = strpart(LatexBox_FoldText_title(), 0, 68)
+    let level = ''
+
+    " Fold level
+    let level = strpart(repeat('-', v:foldlevel-1) . '*',0,3)
+    if v:foldlevel > 3
+        let level = strpart(level, 1) . v:foldlevel
+    endif
+    let level = printf('%-3s', level)
+
     return printf('%-3s %-68s #%5d', level, title, nlines)
 endfunction
 

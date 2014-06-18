@@ -253,24 +253,13 @@ function! s:CaptionFrame(line)
     endif
 endfunction
 
-" {{{1 LatexBox_FoldText
-function! LatexBox_FoldText()
-    " Initialize
+function! LatexBox_FoldText_title()
     let line = getline(v:foldstart)
-    let nlines = v:foldend - v:foldstart + 1
-    let level = ''
     let title = 'Not defined'
-
-    " Fold level
-    let level = strpart(repeat('-', v:foldlevel-1) . '*',0,3)
-    if v:foldlevel > 3
-        let level = strpart(level, 1) . v:foldlevel
-    endif
-    let level = printf('%-3s', level)
 
     " Preamble
     if line =~ '\s*\\documentclass'
-        let title = "Preamble"
+        return "Preamble"
     endif
 
     " Parts, sections and fakesections
@@ -336,7 +325,22 @@ function! LatexBox_FoldText()
         endif
     endif
 
-    let title = strpart(title, 0, 68)
+    return title
+endfunction
+
+" {{{1 LatexBox_FoldText
+function! LatexBox_FoldText()
+    let nlines = v:foldend - v:foldstart + 1
+    let title = strpart(LatexBox_FoldText_title(), 0, 68)
+    let level = ''
+
+    " Fold level
+    let level = strpart(repeat('-', v:foldlevel-1) . '*',0,3)
+    if v:foldlevel > 3
+        let level = strpart(level, 1) . v:foldlevel
+    endif
+    let level = printf('%-3s', level)
+
     return printf('%-3s %-68s #%5d', level, title, nlines)
 endfunction
 

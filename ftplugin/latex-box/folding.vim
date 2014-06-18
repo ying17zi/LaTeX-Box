@@ -275,11 +275,11 @@ function! LatexBox_FoldText_title()
     elseif line =~ '\\appendix'
         let title = "Appendix"
     elseif line =~ secpat1 . '.*}'
-        let title =  matchstr(line, secpat1 . '\zs.*\ze}')
+        let title =  matchstr(line, secpat1 . '\zs.\{-}\ze}')
     elseif line =~ secpat1
         let title =  matchstr(line, secpat1 . '\zs.*')
     elseif line =~ secpat2 . '.*\]'
-        let title =  matchstr(line, secpat2 . '\zs.*\ze\]')
+        let title =  matchstr(line, secpat2 . '\zs.\{-}\ze\]')
     elseif line =~ secpat2
         let title =  matchstr(line, secpat2 . '\zs.*')
     elseif line =~ 'Fake' . sections . ':'

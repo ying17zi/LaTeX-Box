@@ -11,42 +11,6 @@
 
 " {{{1 Set options
 if exists('g:LatexBox_Folding') && g:LatexBox_Folding == 1
-    if !exists('g:LatexBox_fold_text')
-        let g:LatexBox_fold_text=1
-    endif
-    if !exists('g:LatexBox_fold_preamble')
-        let g:LatexBox_fold_preamble=1
-    endif
-    if !exists('g:LatexBox_fold_envs')
-        let g:LatexBox_fold_envs=1
-    endif
-    if !exists('g:LatexBox_fold_envs_force')
-        let g:LatexBox_fold_envs_force = []
-    endif
-    if !exists('g:LatexBox_fold_parts')
-        let g:LatexBox_fold_parts=[
-                    \ "appendix",
-                    \ "frontmatter",
-                    \ "mainmatter",
-                    \ "backmatter"
-                    \ ]
-    endif
-    if !exists('g:LatexBox_fold_sections')
-        let g:LatexBox_fold_sections=[
-                    \ "part",
-                    \ "chapter",
-                    \ "section",
-                    \ "subsection",
-                    \ "subsubsection"
-                    \ ]
-    endif
-    if !exists('g:LatexBox_fold_toc')
-        let g:LatexBox_fold_toc=0
-    endif
-    if !exists('g:LatexBox_fold_toc_levels')
-        let g:LatexBox_fold_toc_levels=1
-    endif
-
     setl foldmethod=expr
     setl foldexpr=LatexBox_FoldLevel(v:lnum)
     if g:LatexBox_fold_text == 1
@@ -63,6 +27,42 @@ if exists('g:LatexBox_Folding') && g:LatexBox_Folding == 1
         autocmd InsertEnter *.tex setlocal foldmethod=manual
         autocmd InsertLeave *.tex setlocal foldmethod=expr
     augroup end
+endif
+
+if !exists('g:LatexBox_fold_text')
+    let g:LatexBox_fold_text=1
+endif
+if !exists('g:LatexBox_fold_preamble')
+    let g:LatexBox_fold_preamble=1
+endif
+if !exists('g:LatexBox_fold_envs')
+    let g:LatexBox_fold_envs=1
+endif
+if !exists('g:LatexBox_fold_envs_force')
+    let g:LatexBox_fold_envs_force = []
+endif
+if !exists('g:LatexBox_fold_parts')
+    let g:LatexBox_fold_parts=[
+                \ "appendix",
+                \ "frontmatter",
+                \ "mainmatter",
+                \ "backmatter"
+                \ ]
+endif
+if !exists('g:LatexBox_fold_sections')
+    let g:LatexBox_fold_sections=[
+                \ "part",
+                \ "chapter",
+                \ "section",
+                \ "subsection",
+                \ "subsubsection"
+                \ ]
+endif
+if !exists('g:LatexBox_fold_toc')
+    let g:LatexBox_fold_toc=0
+endif
+if !exists('g:LatexBox_fold_toc_levels')
+    let g:LatexBox_fold_toc_levels=1
 endif
 
 " {{{1 LatexBox_FoldLevel help functions

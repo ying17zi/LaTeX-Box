@@ -427,9 +427,11 @@ function! LatexBox_LatexErrors(status, ...)
 		echomsg 'Compiling to ' . g:LatexBox_output_type . l:status_msg
 
 		" Only open window when an error/warning is detected
-		if g:LatexBox_quickfix
+		if g:LatexBox_quickfix >= 3
+					\ ? s:log_contains_error(log)))
+					\ : g:LatexBox_quickfix > 0
 			belowright cw
-			if g:LatexBox_quickfix==2
+			if g:LatexBox_quickfix == 2 || g:LatexBox_quickfix == 4
 				wincmd p
 			endif
 		endif

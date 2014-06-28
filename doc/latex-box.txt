@@ -549,6 +549,12 @@ Compilation ~
                 empty and becomes the active window.
         2       The quickfix window is opened automatically if not
                 empty but the cursor stays in the current window.
+        3       The quickfix window is opened automatically if not
+                empty and becomes the active window.  Quickfix window is not
+                opened on warnings, only on errors.
+        4       The quickfix window is opened automatically if not
+                empty but the cursor stays in the current window.  Quickfix
+                window is not opened on warnings, only on errors.
 
 *g:LatexBox_autojump*                           Default: 0
         Automatically jump to first error after calling latexmk.

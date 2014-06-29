@@ -414,7 +414,6 @@ function! LatexBox_LatexErrors(status, ...)
 		botright copen
 	else
 		" Write status message to screen
-		redraw
 		if a:status > 0 || len(getqflist())>1
 			if s:log_contains_error(fnameescape(log))
 				let l:status_msg = ' ... failed!'
@@ -435,6 +434,7 @@ function! LatexBox_LatexErrors(status, ...)
 				wincmd p
 			endif
 		endif
+		redraw
 	endif
 endfunction
 

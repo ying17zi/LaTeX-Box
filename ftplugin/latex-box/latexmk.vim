@@ -413,6 +413,17 @@ function! LatexBox_LatexErrors(status, ...)
 	if a:status < 0
 		botright copen
 	else
+		" Only open window when an error/warning is detected
+		if g:LatexBox_quickfix >= 3
+					\ ? s:log_contains_error(log)
+					\ : g:LatexBox_quickfix > 0
+			belowright cw
+			if g:LatexBox_quickfix == 2 || g:LatexBox_quickfix == 4
+				wincmd p
+			endif
+		endif
+		redraw
+
 		" Write status message to screen
 		if a:status > 0 || len(getqflist())>1
 			if s:log_contains_error(fnameescape(log))
@@ -424,17 +435,6 @@ function! LatexBox_LatexErrors(status, ...)
 			let l:status_msg = ' ... success!'
 		endif
 		echomsg 'Compiling to ' . g:LatexBox_output_type . l:status_msg
-
-		" Only open window when an error/warning is detected
-		if g:LatexBox_quickfix >= 3
-					\ ? s:log_contains_error(log)
-					\ : g:LatexBox_quickfix > 0
-			belowright cw
-			if g:LatexBox_quickfix == 2 || g:LatexBox_quickfix == 4
-				wincmd p
-			endif
-		endif
-		redraw
 	endif
 endfunction
 

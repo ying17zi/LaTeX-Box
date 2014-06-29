@@ -414,7 +414,6 @@ function! LatexBox_LatexErrors(status, ...)
 		botright copen
 	else
 		" Write status message to screen
-		redraw
 		if a:status > 0 || len(getqflist())>1
 			if s:log_contains_error(fnameescape(log))
 				let l:status_msg = ' ... failed!'
@@ -428,13 +427,14 @@ function! LatexBox_LatexErrors(status, ...)
 
 		" Only open window when an error/warning is detected
 		if g:LatexBox_quickfix >= 3
-					\ ? s:log_contains_error(log)))
+					\ ? s:log_contains_error(log)
 					\ : g:LatexBox_quickfix > 0
 			belowright cw
 			if g:LatexBox_quickfix == 2 || g:LatexBox_quickfix == 4
 				wincmd p
 			endif
 		endif
+		redraw
 	endif
 endfunction
 

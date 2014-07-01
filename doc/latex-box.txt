@@ -275,6 +275,7 @@ Viewing ~
         Launch viewer on output file.
         Takes optional arguments, separated by whitespaces, to be passed to the viewer.
         For example, to open the viewer at a specific page and line if SyncTeX is used.
+        See the FAQ below for an application to SumatraPDF for forward searching.
         See |g:LatexBox_output_type| and |g:LatexBox_viewer|.
 
 ------------------------------------------------------------------------------
@@ -722,8 +723,8 @@ A: To enable Inverse Search, that is, jumping from a position in the PDF documen
    http://vim.1045645.n5.nabble.com/autochdir-td1140014.html) and produces a 
    lot of error messages.
 
-To enable Forward Search, that is, jumping from a position in the TeX file to
-the PDF document, add the following mapping to your ~/.vimrc file: >
+   To enable Forward Search, that is, jumping from a position in the TeX file to the
+   PDF document, add the following mapping to your ~/.vim/ftplugin/tex.vim file: >
 
 
        nnoremap <expr><buffer> <C-F11> ':LatexView '.'-forward-search '.

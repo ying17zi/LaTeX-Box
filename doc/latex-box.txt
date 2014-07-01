@@ -731,7 +731,7 @@ A: To enable Inverse Search, that is, jumping from a position in the PDF documen
             \ shellescape('"'.expand('%:p').'"').' '.line(".").' '
 
 <  When hitting <C-F11>, the viewer (SumatraPDF) will open the PDF document 
-   a tthe page corresponding to the current cursor position in the TeX document.
+   at the page corresponding to the current cursor position in the TeX document.
    
 Q: How can I use xelatex instead of pdflatex for some documents only?
 

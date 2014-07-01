@@ -237,13 +237,13 @@ if !exists('g:LatexBox_viewer')
 	endif
 endif
 
-function! LatexBox_View()
+function! LatexBox_View(args)
 	let outfile = LatexBox_GetOutputFile()
 	if !filereadable(outfile)
 		echomsg fnamemodify(outfile, ':.') . ' is not readable'
 		return
 	endif
-	let cmd = g:LatexBox_viewer . ' ' . shellescape(outfile)
+	let cmd = g:LatexBox_viewer . ' ' .a:args . ' ' . shellescape(outfile)
 	if has('win32')
 		let cmd = '!start /b ' . cmd . ' >nul'
 	else
@@ -255,7 +255,7 @@ function! LatexBox_View()
 	endif
 endfunction
 
-command! LatexView call LatexBox_View()
+command! -nargs=* LatexView call LatexBox_View(<args>)
 " }}}
 
 " In Comment {{{

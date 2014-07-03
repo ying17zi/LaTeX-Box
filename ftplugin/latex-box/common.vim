@@ -238,7 +238,7 @@ if !exists('g:LatexBox_viewer')
 endif
 
 function! LatexBox_View(...)
-    let lvargs = join(a:000, ' ')
+	let lvargs = join(a:000, ' ')
 	let outfile = LatexBox_GetOutputFile()
 	if !filereadable(outfile)
 		echomsg fnamemodify(outfile, ':.') . ' is not readable'

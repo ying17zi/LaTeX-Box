@@ -627,6 +627,11 @@ folded.
         'fold-expr' will disable the function. The same goes for |foldexpr|.
         Set this variable in your .vimrc
 
+*g:LatexBox_fold_text*                  Default: 1
+        Turn on/off LaTeX enhenced foldtext() function.  Turn on this option
+        makes LaTeX-Box override the |foldtext| option.  Turn off if you want
+        to set your own |foldtext|.
+
 *g:LatexBox_fold_preamble*              Default: 1
         Turn on/off folding of preamble
 

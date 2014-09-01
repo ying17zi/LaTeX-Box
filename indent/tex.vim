@@ -102,7 +102,7 @@ function! Latexbox_CallIndent()
   call setpos('.', cursor)
 
   " Execute the command.
-  execute 'normal =='
+  execute 'normal! =='
 
   " Restore the previous window position.
   call setpos('.', window)

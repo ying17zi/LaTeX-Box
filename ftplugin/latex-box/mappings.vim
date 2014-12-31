@@ -35,19 +35,19 @@ endif
 
 " Jump to match {{{
 if !exists('g:LatexBox_loaded_matchparen')
-	nnoremap <buffer> % <Plug>LatexBox_JumpToMatch
-	vnoremap <buffer> % <Plug>LatexBox_JumpToMatch
-	onoremap <buffer> % <Plug>LatexBox_JumpToMatch
+	nmap <buffer> % <Plug>LatexBox_JumpToMatch
+	vmap <buffer> % <Plug>LatexBox_JumpToMatch
+	omap <buffer> % <Plug>LatexBox_JumpToMatch
 endif
 " }}}
 
 " Define text objects {{{
-vnoremap <buffer> ie <Plug>LatexBox_SelectCurrentEnvInner
-vnoremap <buffer> ae <Plug>LatexBox_SelectCurrentEnvOuter
+vmap <buffer> ie <Plug>LatexBox_SelectCurrentEnvInner
+vmap <buffer> ae <Plug>LatexBox_SelectCurrentEnvOuter
 onoremap <buffer> ie :normal vie<CR>
 onoremap <buffer> ae :normal vae<CR>
-vnoremap <buffer> i$ <Plug>LatexBox_SelectInlineMathInner
-vnoremap <buffer> a$ <Plug>LatexBox_SelectInlineMathOuter
+vmap <buffer> i$ <Plug>LatexBox_SelectInlineMathInner
+vmap <buffer> a$ <Plug>LatexBox_SelectInlineMathOuter
 onoremap <buffer> i$ :normal vi$<CR>
 onoremap <buffer> a$ :normal va$<CR>
 " }}}

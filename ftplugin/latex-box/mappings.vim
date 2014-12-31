@@ -5,51 +5,51 @@ if exists("g:LatexBox_no_mappings")
 endif
 
 " latexmk {{{
-map <buffer> <LocalLeader>ll :Latexmk<CR>
-map <buffer> <LocalLeader>lL :Latexmk!<CR>
-map <buffer> <LocalLeader>lc :LatexmkClean<CR>
-map <buffer> <LocalLeader>lC :LatexmkClean!<CR>
-map <buffer> <LocalLeader>lg :LatexmkStatus<CR>
-map <buffer> <LocalLeader>lG :LatexmkStatus!<CR>
-map <buffer> <LocalLeader>lk :LatexmkStop<CR>
-map <buffer> <LocalLeader>le :LatexErrors<CR>
+noremap <buffer> <LocalLeader>ll :Latexmk<CR>
+noremap <buffer> <LocalLeader>lL :Latexmk!<CR>
+noremap <buffer> <LocalLeader>lc :LatexmkClean<CR>
+noremap <buffer> <LocalLeader>lC :LatexmkClean!<CR>
+noremap <buffer> <LocalLeader>lg :LatexmkStatus<CR>
+noremap <buffer> <LocalLeader>lG :LatexmkStatus!<CR>
+noremap <buffer> <LocalLeader>lk :LatexmkStop<CR>
+noremap <buffer> <LocalLeader>le :LatexErrors<CR>
 " }}}
 
 " View {{{
-map <buffer> <LocalLeader>lv :LatexView<CR>
+noremap <buffer> <LocalLeader>lv :LatexView<CR>
 " }}}
 
 " TOC {{{
-map <silent> <buffer> <LocalLeader>lt :LatexTOC<CR>
+noremap <silent> <buffer> <LocalLeader>lt :LatexTOC<CR>
 " }}}
 
 " List of labels {{{
-map <silent> <buffer> <LocalLeader>lj :LatexLabels<CR>
+noremap <silent> <buffer> <LocalLeader>lj :LatexLabels<CR>
 " }}}
 
 " Folding {{{
 if g:LatexBox_Folding == 1
-	map <buffer> <LocalLeader>lf :LatexFold<CR>
+	noremap <buffer> <LocalLeader>lf :LatexFold<CR>
 endif
 " }}}
 
 " Jump to match {{{
 if !exists('g:LatexBox_loaded_matchparen')
-	nmap <buffer> % <Plug>LatexBox_JumpToMatch
-	vmap <buffer> % <Plug>LatexBox_JumpToMatch
-	omap <buffer> % <Plug>LatexBox_JumpToMatch
+	nnoremap <buffer> % <Plug>LatexBox_JumpToMatch
+	vnoremap <buffer> % <Plug>LatexBox_JumpToMatch
+	onoremap <buffer> % <Plug>LatexBox_JumpToMatch
 endif
 " }}}
 
 " Define text objects {{{
-vmap <buffer> ie <Plug>LatexBox_SelectCurrentEnvInner
-vmap <buffer> ae <Plug>LatexBox_SelectCurrentEnvOuter
-omap <buffer> ie :normal vie<CR>
-omap <buffer> ae :normal vae<CR>
-vmap <buffer> i$ <Plug>LatexBox_SelectInlineMathInner
-vmap <buffer> a$ <Plug>LatexBox_SelectInlineMathOuter
-omap <buffer> i$ :normal vi$<CR>
-omap <buffer> a$ :normal va$<CR>
+vnoremap <buffer> ie <Plug>LatexBox_SelectCurrentEnvInner
+vnoremap <buffer> ae <Plug>LatexBox_SelectCurrentEnvOuter
+onoremap <buffer> ie :normal vie<CR>
+onoremap <buffer> ae :normal vae<CR>
+vnoremap <buffer> i$ <Plug>LatexBox_SelectInlineMathInner
+vnoremap <buffer> a$ <Plug>LatexBox_SelectInlineMathOuter
+onoremap <buffer> i$ :normal vi$<CR>
+onoremap <buffer> a$ :normal va$<CR>
 " }}}
 
 " Jump between sections {{{

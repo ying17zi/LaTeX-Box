@@ -447,7 +447,7 @@ endfunction
 function! s:uniq(list)
         if exists('*uniq')
                 return uniq(list)
-        elseif len(a:list) == 0
+        elseif len(a:list) <= 1
                 return a:list
         endif
 

@@ -1,5 +1,5 @@
 # LaTeX-BoX
-![LaTeX-BoX](https://raw.github.com/LaTeX-Box-Team/LaTeX-Box/master/doc/LaTeX-BoX.png)
+![LaTeX-BoX](https://raw.github.com/hellabyte/LaTeX-Box/master/.assets/LaTeX-BoX.png)
 
 ## This plugin provides:
 - Background compilation using latexmk.

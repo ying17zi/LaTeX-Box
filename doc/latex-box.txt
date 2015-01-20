@@ -618,11 +618,13 @@ For different settings, change the .vimrc so that a more comfortable
 global variable is used. For example, if one prefers vertical splits 
 (old default), consider the following lines in the .vimrc:
 
+>
               if s:extfname ==? "tex" 
                 ...
-                let g:LatexBox_split_type="vnew"
+                let |g:LatexBox_split_type| = "vnew"
                 ...
               end if
+<        
 
 *g:LatexBox_split_type*                 Default: "new"
         The type of split for the Table of Contents. Use "vnew" for vertical.

@@ -62,6 +62,18 @@ Such an environment can be downloaded at : http://strawberryperl.com/
 Make sure `filetype plugin on` is set in host `.vimrc`, else LaTeX-Box
 will not load.
 
+Note that there are configurable global variables that can be put in the
+`.vimrc`. These are documented, but as an example, one can have the 
+table of contents open as a horizontal split by utilizing this:
+
+    ~/.vimrc
+    ...
+    if s:extfname ==? "tex"
+      ...
+      let g:LatexBox_split_type="new"
+      ...
+    endif
+
 ## Mirror information
 
 This is mirrored on 

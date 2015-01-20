@@ -68,3 +68,9 @@ This is mirrored on
 
 - http://www.vim.org/scripts/script.php?script_id=3109
 - https://launchpad.net/~vim-latex-box
+
+## Example Table of Contents
+
+![LaTeX-BoX TOC](https://raw.github.com/hellabyte/LaTeX-Box/master/.assets/LaTeX-BoX-TOC-demo.png)
+
+

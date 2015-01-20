@@ -71,6 +71,6 @@ This is mirrored on
 
 ## Example Table of Contents
 
-![LaTeX-BoX TOC](https://raw.github.com/hellabyte/LaTeX-Box/master/.assets/LaTeX-BoX-TOC-demo-background.png)
+![LaTeX-BoX TOC](https://raw.github.com/hellabyte/LaTeX-Box/master/.assets/LaTeX-BoX-TOC-demo.png)
 
 

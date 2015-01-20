@@ -389,9 +389,9 @@ function! LatexBox_TOC(...)
 
 	if l:type == "new"
 	  let l:size = g:LatexBox_split_length
-	else if l:type == "vnew"
+	elseif l:type == "vnew"
 	  let l:size = g:LatexBox_split_width
-	end if
+	endif
 
 	if winnr >= 0
 		if a:0 == 0
@@ -418,7 +418,7 @@ function! LatexBox_TOC(...)
 	if g:LatexBox_split_resize
 		silent exe "set columns+=" . l:size
 	endif
-	silent exe g:LatexBox_split_side l:size . l:type . 'LaTeX\ TOC'
+	silent exe g:LatexBox_split_side l:size . l:type . ' LaTeX\ TOC'
 
 	let b:toc = toc
 	let b:toc_numbers = 1

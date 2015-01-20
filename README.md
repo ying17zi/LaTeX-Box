@@ -57,6 +57,11 @@ Copy the directories to your `.vim/` folder.
 Users working with (g)vim on Windows must have a Perl environment installed.
 Such an environment can be downloaded at : http://strawberryperl.com/
 
+### Installation Notes
+
+Make sure `filetype plugin on` is set in host `.vimrc`, else LaTeX-Box
+will not load.
+
 ## Mirror information
 
 This is mirrored on 

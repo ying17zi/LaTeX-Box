@@ -615,19 +615,22 @@ Compilation ~
 Vim Windows ~
 
 For different settings, change the .vimrc so that a more comfortable 
-global variable is used. For example, if one prefers vertical splits 
-(old default), consider the following lines in the .vimrc:
+global variable is used. For example, if one prefers horizontal splits 
+(non-default, featured in screenshot), consider the following lines in 
+the .vimrc:
 
 >
               if s:extfname ==? "tex" 
                 ...
-                let |g:LatexBox_split_type| = "vnew"
+                let |g:LatexBox_split_type| = "new"
                 ...
               end if
 <        
 
-*g:LatexBox_split_type*                 Default: "new"
-        The type of split for the Table of Contents. Use "vnew" for vertical.
+*g:LatexBox_split_type*                 Default: "vnew"
+        The type of split for the Table of Contents. Use "new" for horizontal,
+        "vnew" for vertical. Note that these are the general commands for 
+        splitting--more info can be found via :help new.
 
 *g:LatexBox_split_length*               Default: 15
         Length of horizontally split vim windows. Used for the table of contents.

@@ -387,9 +387,10 @@ function! LatexBox_TOC(...)
 	let l:type = g:LatexBox_split_type
 	let l:size = 10
 
-	if l:type == "new"
+	" Size detection
+	if l:type == l:hori
 	  let l:size = g:LatexBox_split_length
-	elseif l:type == "vnew"
+	elseif l:type == l:vert
 	  let l:size = g:LatexBox_split_width
 	endif
 

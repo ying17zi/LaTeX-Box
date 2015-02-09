@@ -260,15 +260,12 @@ function! LatexBox_View(...)
 		echomsg fnamemodify(outfile, ':.') . ' is not readable'
 		return
 	endif
-	echo outfile
 	let cmd = g:LatexBox_viewer . ' ' . lvargs . ' ' . shellescape(outfile)
-	echo cmd
 	if has('win32')
 		let cmd = '!start /b ' . cmd . ' >nul'
 	else
 		let cmd = '!' . cmd . ' &>/dev/null &'
 	endif
-	echo 'true'
 	silent execute cmd
 	if !has("gui_running")
 		redraw!

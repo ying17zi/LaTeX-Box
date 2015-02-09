@@ -239,12 +239,18 @@ endfunction
 
 " Default pdf viewer
 if !exists('g:LatexBox_viewer')
-	if has('win32')
-		" On windows, 'running' a file will open it with the default program
-		let g:LatexBox_viewer = ''
-	else
-		let g:LatexBox_viewer = 'xdg-open'
+	" On windows, 'running' a file will open it with the default program
+	let s:viewer = ''
+	if has('unix')
+	  " echo -n necessary as uname -s will append \n otherwise
+      let s:uname = system('echo -n $(uname -s)')
+	  if s:uname == "Darwin"
+		  let s:viewer = 'open'
+	  else
+		  let s:viewer = 'xdg-open'
+	  endif
 	endif
+	let g:LatexBox_viewer = s:viewer
 endif
 
 function! LatexBox_View(...)
@@ -254,12 +260,15 @@ function! LatexBox_View(...)
 		echomsg fnamemodify(outfile, ':.') . ' is not readable'
 		return
 	endif
+	echo outfile
 	let cmd = g:LatexBox_viewer . ' ' . lvargs . ' ' . shellescape(outfile)
+	echo cmd
 	if has('win32')
 		let cmd = '!start /b ' . cmd . ' >nul'
 	else
 		let cmd = '!' . cmd . ' &>/dev/null &'
 	endif
+	echo 'true'
 	silent execute cmd
 	if !has("gui_running")
 		redraw!

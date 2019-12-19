@@ -1,3 +1,6 @@
+(I do not use LaTeX-Box any more. Just to keep a clone of the inline maths completion feature that I develped during my PhD.)
+ 
+
 # LaTeX-BoX
 ![LaTeX-BoX](https://raw.github.com/LaTeX-Box-Team/LaTeX-Box/master/doc/LaTeX-BoX.png)
 
